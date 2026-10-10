@@ -8,7 +8,7 @@ Brew is treated as a cask installer that belongs to the configuration, not as a
 package manager you use by hand.
 
 Casks live in `modules/darwin/homebrew.nix`. Current list: obs, steam, orbstack,
-vorssaint, rustdesk, anydesk, tailscale-app, helium-browser, discord.
+vorssaint, rustdesk, anydesk, tailscale-app, helium-browser, discord, vlc.
 
 Two GUI apps moved from nixpkgs to a cask even though nixpkgs packages them:
 `helium-browser` (the flake's package disables the browser's self-update) and
@@ -233,3 +233,50 @@ them and fail without a darwin builder.
 machine gets a new key, so existing sops secrets are only decryptable where the
 matching key is present. Sharing secrets across machines needs a separate
 key-distribution decision.
+
+## Fonts
+
+`packages/lilex-nerd-font.nix` patches Lilex from the upstream release with the
+Nerd Fonts patcher, mono variant, all 14 static styles, and
+`modules/darwin/fonts.nix` installs the result through nix-darwin
+`fonts.packages` into `/Library/Fonts/Nix Fonts` (workstation profile only).
+
+Why not `nerd-fonts.lilex` from nixpkgs: that is the Nerd Fonts v3.5.0 bundle
+with Lilex 2.700 (2026-04-04), while upstream 2.630 is from 2026-10-05. Lilex's
+version numbers are not monotonic, so compare release dates, not tags. The
+bundle also ships 10 styles and skips Light and SemiBold.
+
+To bump: change `version` and the `hash` in `packages/lilex-nerd-font.nix`
+(`nix store prefetch-file <url>` prints the SRI hash). The patcher warns that
+fontforge 20251009 "produces unusable fonts in some cases"; if glyphs come out
+broken, pin an older `fontforge` in that file.
+
+`modules/home/ghostty.nix` writes `~/.config/ghostty/config.ghostty` with
+`font-family = Lilex Nerd Font Mono`. Ghostty loads the XDG file first and the
+`~/Library/Application Support/com.mitchellh.ghostty/*` files after it, so a
+config there would win.
+
+## Prompt (starship)
+
+The agents profile enables starship with **no** `settings` and no `presets`. That
+is deliberate: home-manager writes `~/.config/starship.toml` only when one of
+those is set, and exports `STARSHIP_CONFIG` either way, so the file stays loose
+and the prompt can be explored without a switch per try:
+
+```sh
+starship preset --list
+starship preset tokyo-night -o ~/.config/starship.toml
+```
+
+When the config stops changing, declare it in `profiles/agents/home.nix`:
+
+- `programs.starship.presets = [ "tokyo-night" ];` — home-manager merges the
+  shipped preset itself, later entries winning.
+- `programs.starship.settings = builtins.fromTOML (builtins.readFile ../../config/starship.toml);`
+  — keeps the tweaked TOML in the repo as the source of truth.
+
+Either way home-manager takes the file over and the loose one is moved aside as
+`starship.toml.hm-backup`. Symbol-heavy presets need a Nerd Font in the
+terminal. While starship is on, the plain `PROMPT` in `modules/home/zsh.nix` is
+skipped (`lib.mkIf (!config.programs.starship.enable)`) because starship resets
+the prompt on every `precmd`.
