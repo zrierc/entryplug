@@ -3,11 +3,38 @@
 {
   imports = [
     ../headless/home.nix
+    ../../modules/home/tools.nix
     ../../modules/home/pi
     ../../modules/home/herdr.nix
   ];
 
-  # Node 26 for day-to-day npm work. pi bundles its own Node 22 runtime, so a
-  # skill with native deps compiled here may not load inside pi.
-  home.packages = [ pkgs.nodejs_26 pkgs.bun ];
+  home.packages = with pkgs; [
+    bun
+    nodejs_26
+
+    btop
+    eza
+    fd
+    lazygit
+    neovim
+    ripgrep
+    ripgrep-all
+    tldr
+    zoxide
+  ];
+
+  # neovim is the editor in this profile. vim stays installed and usable, it
+  # just stops owning EDITOR/VISUAL (modules/home/vim.nix sets it as a default).
+  programs.vim.defaultEditor = false;
+
+  # No settings and no presets on purpose: home-manager then leaves
+  # ~/.config/starship.toml alone (it only writes it when one of those is set),
+  # so the prompt can be explored freely with `starship preset <name> -o`.
+  # Declare it here once the config stops changing. See docs/operations.md.
+  programs.starship.enable = true;
+
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+  };
 }
