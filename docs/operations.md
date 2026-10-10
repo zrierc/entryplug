@@ -268,6 +268,28 @@ broken, pin an older `fontforge` in that file.
 `~/Library/Application Support/com.mitchellh.ghostty/*` files after it, so a
 config there would win.
 
+## Comment style
+
+Comments explain **why**, never what the code does, and are English only.
+
+Keep:
+
+- non-obvious upstream behaviour, such as why `darwin-rebuild --dry-run` cannot
+  be passed through,
+- trade-offs behind a choice, such as why eza's aliases are forced key by key or
+  why starship gets no settings,
+- platform side effects the code cannot show, such as ghostty's config load
+  order.
+
+Delete:
+
+- restatements of the line below (`# Storage: weekly GC ...` above `nix.gc`),
+- stale package lists inside comments,
+- commented-out code.
+
+One deliberate exception: the `font-feature` lines in `modules/home/ghostty.nix`
+are commented config meant to be uncommented in place.
+
 ## Prompt (starship)
 
 The agents profile enables starship with **no** `settings` and no `presets`. That
