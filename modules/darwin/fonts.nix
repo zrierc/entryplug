@@ -1,4 +1,3 @@
-# nix-darwin installs these into /Library/Fonts/Nix Fonts on activation.
 { pkgs, ... }:
 
 {

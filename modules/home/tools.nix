@@ -1,6 +1,5 @@
 # Modern shell tooling for the agents profile. Only tools that need shell init
-# or config get a home-manager module; the rest are plain packages in the
-# profile (fd, ripgrep-all, btop, lazygit, tldr, neovim, ani_cli).
+# or config get a home-manager module; the rest stay plain packages.
 { pkgs, lib, ... }:
 
 let
@@ -15,8 +14,8 @@ let
 in
 
 {
-  programs.zoxide.enable = true; # z / zi, needs the init hook to work at all
-  programs.bat.enable = true; # theme and config; the `cat` alias is shared
+  programs.zoxide.enable = true; # z/zi need the init hook
+  programs.bat.enable = true; # config only; the cat alias lives in shell-common
   programs.eza.enable = true;
 
   programs.zsh.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin ezaAliases;

@@ -29,7 +29,6 @@
       max-free = "100G";
     };
 
-    # Storage: weekly GC keeps 15 days of generations, weekly store optimisation.
     gc = {
       automatic = true;
       interval = [ { Weekday = 7; Hour = 3; Minute = 15; } ];

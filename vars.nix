@@ -1,4 +1,3 @@
-# Single source of truth for user-level values.
 {
   username = "zrie";
 

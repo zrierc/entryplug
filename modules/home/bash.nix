@@ -15,7 +15,6 @@ lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     ];
 
     bashrcExtra = ''
-      # fancy prompt with color support
       case "$TERM" in
       xterm-color | *-256color) color_prompt=yes ;;
       esac

@@ -1,4 +1,3 @@
-# Builds the nix-darwin configuration for one host + profile.
 { inputs, vars, host, profile }:
 
 inputs.nix-darwin.lib.darwinSystem {
