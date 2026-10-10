@@ -1,0 +1,23 @@
+# ignore all
+*
+
+# nix
+!*/
+!**/*.nix
+!/flake.nix
+!/flake.lock
+!/.gitignore
+
+# docs
+!/README.md
+!/docs/operations.md
+
+# repo payload, config, and dotfiles (non-nix)
+!config/
+!config/**
+!modules/home/pi/extensions/
+!modules/home/pi/extensions/**
+!modules/home/pi/guardrails.json
+
+# vendored references
+ref/
