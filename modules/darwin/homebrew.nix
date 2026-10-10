@@ -26,6 +26,8 @@
     };
 
     # Only casks with no usable nixpkgs aarch64-darwin package live here.
+    # GUI apps also come here when the nix store copy breaks Gatekeeper or
+    # blocks the app's own updater: helium, discord.
     casks = [
       "obs"
       "steam"
@@ -35,6 +37,7 @@
       "anydesk"
       "tailscale-app"
       "helium-browser"
+      "discord"
     ];
   };
 

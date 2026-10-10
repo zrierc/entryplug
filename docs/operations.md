@@ -8,7 +8,13 @@ Brew is treated as a cask installer that belongs to the configuration, not as a
 package manager you use by hand.
 
 Casks live in `modules/darwin/homebrew.nix`. Current list: obs, steam, orbstack,
-vorssaint, rustdesk, anydesk, tailscale-app, helium-browser.
+vorssaint, rustdesk, anydesk, tailscale-app, helium-browser, discord.
+
+Two GUI apps moved from nixpkgs to a cask even though nixpkgs packages them:
+`helium-browser` (the flake's package disables the browser's self-update) and
+`discord` (the nix store copy is refused by Gatekeeper as damaged, and the
+nixpkgs package sets `disableUpdates`, so the app's own updater is off). Rule of
+thumb: a GUI app that self-updates belongs in a cask.
 
 Heads up on the helium name: the Homebrew cask `helium` is a different app
 (koush's desktop installer). The one in this config is `helium-browser`. It has

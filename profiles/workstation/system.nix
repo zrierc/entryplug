@@ -10,7 +10,6 @@
 
   environment.systemPackages = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (with pkgs; [
     bitwarden-desktop
-    discord
     firefox-bin
     ghostty-bin
   ]);
