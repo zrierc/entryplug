@@ -29,10 +29,11 @@ currently unused, in case a pinned browser is wanted again.
 
 ### Lock layers
 
-1. **Fail-closed drift check** — `homebrew.onActivation.cleanup = "check"`.
-   During `darwin-rebuild switch`, a `brew bundle cleanup` check runs before
-   anything is applied. If any tap, formula or cask exists that is not in the
-   generated Brewfile, the switch aborts and lists the offenders.
+1. **Declared list is the only source of truth** —
+   `homebrew.onActivation.cleanup = "uninstall"`. During `darwin-rebuild switch`
+   nix-darwin runs `brew bundle --force-cleanup`, which deletes every tap,
+   formula and cask that is not in the generated Brewfile. Removing a line from
+   the config removes the package on the next switch.
 2. **Blocked command** — `modules/darwin/brew-lock.nix` shadows nix-homebrew's
    `brew` launcher on PATH with a shim that refuses to change state.
 3. **No ambient brew** — Homebrew auto-update and brew shell integration stay
@@ -67,32 +68,39 @@ A refused command prints where to add the package instead.
   their own updaters and brew leaves them alone. Only rustdesk and anydesk are
   brew-managed. Do not pass `--greedy`: it makes brew fight the apps' updaters.
 
-### Recovery
+### Drift and removals
 
-When the drift check fails, the switch message lists the packages. Either:
+`cleanup = "uninstall"` means brew deletes anything undeclared, without asking.
+What that covers:
 
-- add them to `modules/darwin/homebrew.nix` (if they belong in the config), or
-- remove them: `brew uninstall --cask <name>`, or `brew bundle cleanup --force`.
+- **Removed from the config** — the app goes away on the next switch. Nothing to
+  do by hand.
+- **Installed outside the config** — also deleted. This is the intended
+  behaviour here, since `install`, `tap` and `bundle` are refused by the shim,
+  so hand installs are the exception. It also removes undeclared formulae,
+  including ones pulled in as dependencies of a hand-installed formula.
 
-`uninstall` is allowed through the shim precisely for this. It self-heals: a
-declared cask removed by mistake comes back on the next activation. `bundle`
-itself is refused by the shim, so that form needs the real binary:
-`/opt/homebrew/bin/brew bundle cleanup --force`. When the drift is an app that
-was removed from the config (for example a migration from Discord to Vesktop),
-the shim on the machine is still the old one, so the very first removal also
-needs `/opt/homebrew/bin/brew uninstall --cask <name>`.
+To preview what would be deleted, list it without `--force`. The generated
+Brewfile path is exported as `HOMEBREW_BUNDLE_FILE`, so the shim's refusal of
+`bundle` means the real binary is needed for this one:
 
-Nothing is ever deleted silently. `cleanup = "uninstall"` and `"zap"` exist but
-are not used on purpose: `zap` also deletes an app's preferences, caches and
-support files, which is not something a switch should do without asking.
+```sh
+/opt/homebrew/bin/brew bundle cleanup
+```
+
+The shim allows `uninstall` for the case where you want to remove something
+right away; a declared cask removed by mistake comes back on the next
+activation, so it self-heals. `zap` is deliberately not used: it would also
+wipe the app's preferences, caches and support files.
 
 ### Honest limit
 
 `/opt/homebrew/bin/brew` still exists and can be called by absolute path. It
 cannot be permission-locked: nix-homebrew recreates it as a symlink to a
 nix-store script on every activation, and `brew bundle` itself must run as
-`zrie` during a switch. The drift check is what makes a bypassed install
-impossible to keep — the next switch fails until it is resolved.
+`zrie` during a switch. What makes a bypassed install pointless is
+`cleanup = "uninstall"`: the next switch deletes whatever the declared list does
+not contain.
 
 ## Storage
 
@@ -164,10 +172,10 @@ system profile is the one that grows.
 
 ### Homebrew disk use
 
-`homebrew.onActivation.cleanup = "check"`, so `brew bundle` never deletes
-anything by itself: casks installed outside the config make the next switch
-abort instead, until they are added to the config or removed with
-`brew bundle cleanup --force`. See the Homebrew policy above.
+`homebrew.onActivation.cleanup = "uninstall"` keeps the Homebrew side at exactly
+the declared set: casks installed outside the config are deleted on the next
+switch, and `brew bundle` never upgrades what is already there. See the Homebrew
+policy above.
 
 ## Editing
 

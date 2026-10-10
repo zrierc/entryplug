@@ -1,6 +1,6 @@
-# Homebrew is a cask installer only. It is locked down in brew-lock.nix and by
-# onActivation.cleanup, which refuses to activate if anything outside the
-# generated Brewfile is installed.
+# Homebrew is a cask installer only: brew-lock.nix restricts the command, and
+# onActivation.cleanup removes anything not in the generated Brewfile, so the
+# declared list is the only source of truth.
 { config, lib, pkgs, ... }:
 
 {
@@ -20,7 +20,7 @@
     };
 
     onActivation = {
-      cleanup = "check";
+      cleanup = "uninstall";
       autoUpdate = false;
       upgrade = false;
     };
