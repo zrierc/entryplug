@@ -10,7 +10,7 @@ let
     text = ''
       real=${lib.escapeShellArg "${config.homebrew.prefix}/bin/brew"}
       if [ ! -x "$real" ]; then
-        printf >&2 'entry-plug: Homebrew is not installed by this configuration.\n'
+        printf >&2 'entryplug: Homebrew is not installed by this configuration.\n'
         exit 1
       fi
 
@@ -26,7 +26,7 @@ let
           exec "$real" "$@"
           ;;
         *)
-          printf >&2 "entry-plug: refusing 'brew %s'\n" "$cmd"
+          printf >&2 "entryplug: refusing 'brew %s'\n" "$cmd"
           printf >&2 '%s\n' \
             'Homebrew here only installs the casks declared in profiles/workstation.' \
             'Add the package to that profile, or use nixpkgs, then run:' \

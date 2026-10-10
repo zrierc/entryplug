@@ -27,7 +27,7 @@ let
     lib.concatStringsSep "\n" (map (repo: ''
       if ! ${helmBin} repo list -o json 2>/dev/null | grep -q '"name": "${repo.name}"'; then
         ${helmBin} repo add ${repo.name} ${repo.url} \
-          || echo "entry-plug: helm repo add ${repo.name} failed; run 'helm repo add ${repo.name} ${repo.url}' later" >&2
+          || echo "entryplug: helm repo add ${repo.name} failed; run 'helm repo add ${repo.name} ${repo.url}' later" >&2
       fi
     '') helmRepos);
 in

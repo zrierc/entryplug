@@ -87,7 +87,7 @@
         {
           type = "app";
           program = "${mkAppProgram system profile}/bin/${profile}";
-          meta.description = "entry-plug: switch this machine to the '${profile}' profile";
+          meta.description = "entryplug: switch this machine to the '${profile}' profile";
         };
 
       dottedDarwinConfigurations = lib.listToAttrs (lib.concatMap

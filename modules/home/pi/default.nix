@@ -62,7 +62,7 @@ in
   home.activation.piSync = lib.hm.dag.entryAfter [ "piGuardrails" ] ''
     if command -v pi >/dev/null 2>&1; then
       ${pi}/bin/pi update --extensions \
-        || echo "entry-plug: 'pi update --extensions' failed; run it again when online" >&2
+        || echo "entryplug: 'pi update --extensions' failed; run it again when online" >&2
     fi
   '';
 }

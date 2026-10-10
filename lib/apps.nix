@@ -34,8 +34,8 @@ pkgs.writeShellApplication {
     profile=${lib.escapeShellArg profile}
     user=${lib.escapeShellArg vars.username}
 
-    fail() { printf >&2 'entry-plug: %s\n' "$*"; exit 1; }
-    note() { printf >&2 'entry-plug: %s\n' "$*"; }
+    fail() { printf >&2 'entryplug: %s\n' "$*"; exit 1; }
+    note() { printf >&2 'entryplug: %s\n' "$*"; }
 
     # darwin-rebuild --dry-run is broken (it still runs `nix-env --set` on an
     # unbuilt path), so turn a dry run into a real build-only action instead.

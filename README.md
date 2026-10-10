@@ -1,4 +1,4 @@
-# entry-plug
+# Entryplug
 
 Layer between me and my machine. Load anywhere, anytime. Powered by Nix.
 
