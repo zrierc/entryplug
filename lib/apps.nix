@@ -15,7 +15,8 @@ let
   darwinBranch = lib.optionalString (darwinRebuild != null) ''
     if [ "$(uname -s)" = "Darwin" ]; then
       attr="$host-$profile"
-      has_attr "$attr" || fail "no darwinConfiguration '$attr' for host '$host'; set ENTRYPLUG_HOST if this Mac's name differs"
+      has_attr darwinConfigurations "$attr" \
+        || fail "no darwinConfiguration '$attr' for host '$host'. Available: $names. Set ENTRYPLUG_HOST if this Mac's name differs"
       exec sudo ${darwinRebuild}/bin/darwin-rebuild switch --flake "$flake#$attr" "$@"
     fi
   '';
@@ -31,8 +32,12 @@ pkgs.writeShellApplication {
 
     fail() { printf >&2 'entry-plug: %s\n' "$*"; exit 1; }
 
+    # $1: flake output set (darwinConfigurations, nixosConfigurations,
+    # homeConfigurations), $2: attribute name inside it. Sets `names` so the
+    # caller can report what does exist.
     has_attr() {
-      nix eval --raw "$flake#$1" --apply 'x: "ok"' >/dev/null 2>&1
+      names=$(nix eval --json "$flake#$1" --apply 'x: builtins.attrNames x' 2>/dev/null || true)
+      [[ $names == *'"'$2'"'* ]]
     }
 
     host=""
@@ -59,12 +64,14 @@ pkgs.writeShellApplication {
 
     if [ -e /etc/NIXOS ]; then
       attr="$host.$profile"
-      has_attr "nixosConfigurations.\"$attr\"" || fail "no nixosConfiguration '$attr' for host '$host'"
+      has_attr nixosConfigurations "$attr" \
+        || fail "no nixosConfiguration '$attr' for host '$host'. Available: $names"
       exec sudo nixos-rebuild switch --flake "$flake#$attr" "$@"
     fi
 
     attr="$user@linux-$(uname -m)-$profile"
-    has_attr "homeConfigurations.\"$attr\"" || fail "no homeConfiguration '$attr'; this profile may be macOS-only"
+    has_attr homeConfigurations "$attr" \
+      || fail "no homeConfiguration '$attr'. Available: $names"
     exec ${homeManager}/bin/home-manager switch -b hm-backup --flake "$flake#$attr" "$@"
   '';
 }
