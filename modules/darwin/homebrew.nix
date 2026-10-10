@@ -38,6 +38,7 @@
       "tailscale-app"
       "helium-browser"
       "discord"
+      "vlc"
     ];
   };
 

@@ -13,5 +13,6 @@
     bitwarden-desktop
     firefox-bin
     ghostty-bin
+    mpv
   ]);
 }
