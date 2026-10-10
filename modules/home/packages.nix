@@ -6,7 +6,6 @@
     curl
     htop
     kubectl
-    kubernetes-helm
     ripgrep
     tree
     wget

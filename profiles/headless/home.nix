@@ -9,6 +9,5 @@
     ../../modules/home/fzf.nix
     ../../modules/home/tmux.nix
     ../../modules/home/secrets.nix
-    ../../modules/home/helm.nix
   ];
 }
