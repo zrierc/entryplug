@@ -197,6 +197,12 @@ profiles it supports in `hosts/<host>.nix`; the flake generates one
 
 ### Checks
 
+`--dry-run` (or `-n`) on any profile app means "build, do not activate": the
+wrapper maps it to `darwin-rebuild build`, `nixos-rebuild build` or
+`home-manager build`. Upstream `darwin-rebuild --dry-run` is unusable — it
+passes `--dry-run` to `nix build` and then runs `nix-env --set` on the unbuilt
+path, which fails with "don't know how to build these paths".
+
 Any machine:
 
 ```sh

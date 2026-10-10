@@ -17,7 +17,11 @@ let
       attr="$host-$profile"
       has_attr darwinConfigurations "$attr" \
         || fail "no darwinConfiguration '$attr' for host '$host'. Available: $names. Set ENTRYPLUG_HOST if this Mac's name differs"
-      exec sudo ${darwinRebuild}/bin/darwin-rebuild switch --flake "$flake#$attr" "$@"
+      if [ -n "$dryRun" ]; then
+        note "--dry-run: building the system configuration only, nothing is activated"
+        exec ${darwinRebuild}/bin/darwin-rebuild build --flake "$flake#$attr" "''${args[@]}"
+      fi
+      exec sudo ${darwinRebuild}/bin/darwin-rebuild switch --flake "$flake#$attr" "''${args[@]}"
     fi
   '';
 in
@@ -31,6 +35,18 @@ pkgs.writeShellApplication {
     user=${lib.escapeShellArg vars.username}
 
     fail() { printf >&2 'entry-plug: %s\n' "$*"; exit 1; }
+    note() { printf >&2 'entry-plug: %s\n' "$*"; }
+
+    # darwin-rebuild --dry-run is broken (it still runs `nix-env --set` on an
+    # unbuilt path), so turn a dry run into a real build-only action instead.
+    args=()
+    dryRun=""
+    for arg in "$@"; do
+      case "$arg" in
+        --dry-run|-n) dryRun=1 ;;
+        *) args+=("$arg") ;;
+      esac
+    done
 
     # $1: flake output set (darwinConfigurations, nixosConfigurations,
     # homeConfigurations), $2: attribute name inside it. Sets `names` so the
@@ -66,12 +82,20 @@ pkgs.writeShellApplication {
       attr="$host.$profile"
       has_attr nixosConfigurations "$attr" \
         || fail "no nixosConfiguration '$attr' for host '$host'. Available: $names"
-      exec sudo nixos-rebuild switch --flake "$flake#$attr" "$@"
+      if [ -n "$dryRun" ]; then
+        note "--dry-run: building the system configuration only, nothing is activated"
+        exec sudo nixos-rebuild build --flake "$flake#$attr" "''${args[@]}"
+      fi
+      exec sudo nixos-rebuild switch --flake "$flake#$attr" "''${args[@]}"
     fi
 
     attr="$user@linux-$(uname -m)-$profile"
     has_attr homeConfigurations "$attr" \
       || fail "no homeConfiguration '$attr'. Available: $names"
-    exec ${homeManager}/bin/home-manager switch -b hm-backup --flake "$flake#$attr" "$@"
+    if [ -n "$dryRun" ]; then
+      note "--dry-run: building the home configuration only, nothing is activated"
+      exec ${homeManager}/bin/home-manager build --flake "$flake#$attr" "''${args[@]}"
+    fi
+    exec ${homeManager}/bin/home-manager switch -b hm-backup --flake "$flake#$attr" "''${args[@]}"
   '';
 }

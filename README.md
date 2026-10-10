@@ -57,11 +57,15 @@ permission during the first activation, and a TCC prompt can abort an SSH
 switch.
 
 ```sh
-nix run github:zrierc/entryplug -- --dry-run   # headless by default
-nix run github:zrierc/entryplug                # first switch
+nix run github:zrierc/entryplug -- --dry-run   # build only, activates nothing
+nix run github:zrierc/entryplug                # first switch (headless)
 nix run github:zrierc/entryplug#agents
 nix run github:zrierc/entryplug#workstation
 ```
+
+`--dry-run` builds the whole system configuration and stops before activation.
+It is not passed through to `darwin-rebuild --dry-run`, which is broken upstream
+(it still runs `nix-env --set` on a path it never built).
 
 Until the GitHub repo exists, run the same commands from a local clone with
 `.#` instead of `github:zrierc/entryplug`.
