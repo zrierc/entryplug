@@ -9,5 +9,14 @@ lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
   home.file.".config/ghostty/config.ghostty".text = ''
     font-family = Lilex Nerd Font Mono
     font-size = 13
+
+    # Lilex holds its programming ligatures in `calt`, not `liga`. Font
+    # features apply to every face; per-face targeting is not implemented yet.
+    # Uncomment what you want:
+    #
+    # font-feature = -calt   # programming ligatures off
+    # font-feature = +zero   # slashed zero
+    # font-feature = +ss01   # stylistic sets, Lilex has ss01-ss05
+    # font-feature = +cv01   # character variants, Lilex has cv01-cv15
   '';
 }
