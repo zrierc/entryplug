@@ -8,12 +8,16 @@ Brew is treated as a cask installer that belongs to the configuration, not as a
 package manager you use by hand.
 
 Casks live in `modules/darwin/homebrew.nix`. Current list: obs, steam, orbstack,
-vorssaint, rustdesk, anydesk, tailscale-app, helium-browser, discord, vlc.
+vorssaint, rustdesk, anydesk, tailscale-app, helium-browser, vesktop, vlc.
 
 Two GUI apps moved from nixpkgs to a cask even though nixpkgs packages them:
 `helium-browser` (the flake's package disables the browser's self-update) and
 `discord` (the nix store copy is refused by Gatekeeper as damaged, and the
-nixpkgs package sets `disableUpdates`, so the app's own updater is off). Rule of
+nixpkgs package sets `disableUpdates`, so the app's own updater is off). Discord
+has since been replaced by `vesktop`: nixpkgs builds Vesktop from source on
+darwin, which lands read-only in `/Applications/Nix Apps` with the same
+Gatekeeper class of problem, while the cask is prebuilt, notarized and
+self-updating. Rule of
 thumb: a GUI app that self-updates belongs in a cask.
 
 Heads up on the helium name: the Homebrew cask `helium` is a different app
@@ -35,12 +39,12 @@ currently unused, in case a pinned browser is wanted again.
    disabled, so `/opt/homebrew/bin` never enters PATH, and switches never run
    `brew update` behind your back.
 
-Read-only commands work through the shim, plus `upgrade`. `update` stays
-refused.
+Read-only commands work through the shim, plus `upgrade` and `uninstall`.
+`update` stays refused.
 
 | Allowed | Refused |
 | --- | --- |
-| `brew list`, `info`, `search`, `desc`, `deps`, `uses`, `outdated`, `doctor`, `config`, `home`, `help`, `tap-info`, `leaves`, `cat`, `log`, `upgrade`, `--prefix`, `--version`, `--cellar`, `--repository` | everything else, including `install`, `update`, `uninstall`, `reinstall`, `tap`, `bundle`, `services`, `cleanup`, `shellenv` |
+| `brew list`, `info`, `search`, `desc`, `deps`, `uses`, `outdated`, `doctor`, `config`, `home`, `help`, `tap-info`, `leaves`, `cat`, `log`, `upgrade`, `uninstall`, `--prefix`, `--version`, `--cellar`, `--repository` | everything else, including `install`, `update`, `reinstall`, `tap`, `bundle`, `services`, `cleanup`, `shellenv` |
 
 A refused command prints where to add the package instead.
 
@@ -68,7 +72,15 @@ A refused command prints where to add the package instead.
 When the drift check fails, the switch message lists the packages. Either:
 
 - add them to `modules/darwin/homebrew.nix` (if they belong in the config), or
-- remove them: `brew bundle cleanup --force`.
+- remove them: `brew uninstall --cask <name>`, or `brew bundle cleanup --force`.
+
+`uninstall` is allowed through the shim precisely for this. It self-heals: a
+declared cask removed by mistake comes back on the next activation. `bundle`
+itself is refused by the shim, so that form needs the real binary:
+`/opt/homebrew/bin/brew bundle cleanup --force`. When the drift is an app that
+was removed from the config (for example a migration from Discord to Vesktop),
+the shim on the machine is still the old one, so the very first removal also
+needs `/opt/homebrew/bin/brew uninstall --cask <name>`.
 
 Nothing is ever deleted silently. `cleanup = "uninstall"` and `"zap"` exist but
 are not used on purpose: `zap` also deletes an app's preferences, caches and

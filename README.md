@@ -10,7 +10,7 @@ Profiles are cumulative and selected when you switch:
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `headless`    | CLI tools, bash (Linux) / zsh (macOS), vim, git, fzf, tmux, sops/age                                                                                                     |
 | `agents`      | `headless` + pi (with extensions), herdr, node 26 + bun, starship prompt, modern shell tools (zoxide, eza, bat, fd, ripgrep-all, btop, lazygit, tldr, neovim), nvim as `$EDITOR` |
-| `workstation` | `agents` + ani-cli, mpv (CLI), Lilex Nerd Font Mono (patched from upstream) from nixpkgs; ghostty config; bitwarden, firefox, ghostty from nixpkgs; helium, discord, vlc, obs, steam, orbstack, vorssaint, rustdesk, anydesk, tailscale via Homebrew casks |
+| `workstation` | `agents` + ani-cli, mpv (CLI), Lilex Nerd Font Mono (patched from upstream) from nixpkgs; ghostty config; bitwarden, firefox, ghostty from nixpkgs; helium, vesktop, vlc, obs, steam, orbstack, vorssaint, rustdesk, anydesk, tailscale via Homebrew casks |
 | `desktop`     | not implemented (NixOS-only, future)                                                                                                                                     |
 
 Default profile is `headless`. List available hosts under [`hosts/`](./hosts/).

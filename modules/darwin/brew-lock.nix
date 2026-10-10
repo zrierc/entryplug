@@ -25,6 +25,11 @@ let
           # those apps update themselves.
           exec "$real" "$@"
           ;;
+        uninstall)
+          # Escape hatch for drift. A declared cask removed by mistake is
+          # reinstalled by the next activation, so this self-heals.
+          exec "$real" "$@"
+          ;;
         *)
           printf >&2 "entryplug: refusing 'brew %s'\n" "$cmd"
           printf >&2 '%s\n' \
