@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, vars, host, profile, homeModule, ... }:
+{ config, lib, pkgs, inputs, host, profile, homeModule, ... }:
 
 {
   nixpkgs.config.allowUnfree = true;
@@ -41,7 +41,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "hm-backup";
-    extraSpecialArgs = { inherit inputs vars host; };
+    extraSpecialArgs = { inherit inputs host; };
     users.${host.primaryUser} = {
       imports = [
         ../home/base.nix

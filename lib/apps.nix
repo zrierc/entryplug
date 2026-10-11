@@ -1,7 +1,7 @@
 { lib
 , pkgs
 , self
-, vars
+, username
 , profile
 , darwinRebuild
 , homeManager
@@ -30,7 +30,7 @@ pkgs.writeShellApplication {
   text = ''
     flake=${lib.escapeShellArg flake}
     profile=${lib.escapeShellArg profile}
-    user=${lib.escapeShellArg vars.username}
+    user=${lib.escapeShellArg username}
 
     fail() { printf >&2 'entryplug: %s\n' "$*"; exit 1; }
     note() { printf >&2 'entryplug: %s\n' "$*"; }

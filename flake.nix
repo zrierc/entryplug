@@ -39,10 +39,12 @@
     let
       inherit (nixpkgs) lib;
 
-      vars = import ./vars.nix;
       hosts = {
         unit-05 = import ./hosts/unit-05.nix;
       };
+
+      # linux homeConfigurations are not tied to a host, so the user comes from the only declared host
+      username = hosts.unit-05.primaryUser;
 
       darwinProfiles = [ "headless" "agents" "workstation" ];
       linuxProfiles = [ "headless" ];
@@ -50,20 +52,20 @@
 
       mkDarwin = hostName: profile:
         import ./lib/mk-host.nix {
-          inherit inputs vars profile;
+          inherit inputs profile;
           host = hosts.${hostName};
         };
 
       mkHome = system: profile:
         home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
-          extraSpecialArgs = { inherit inputs vars; };
+          extraSpecialArgs = { inherit inputs; };
           modules = [
             ./modules/home/base.nix
             (./profiles + "/${profile}/home.nix")
             {
-              home.username = vars.username;
-              home.homeDirectory = "/home/${vars.username}";
+              home.username = username;
+              home.homeDirectory = "/home/${username}";
             }
           ];
         };
@@ -73,7 +75,7 @@
           pkgs = import nixpkgs { inherit system; };
         in
         import ./lib/apps.nix {
-          inherit lib pkgs vars profile self;
+          inherit lib pkgs username profile self;
           darwinRebuild =
             if lib.hasSuffix "darwin" system
             then nix-darwin.packages.${system}.darwin-rebuild
@@ -108,7 +110,7 @@
         (system:
           map
             (profile: lib.nameValuePair
-              "${vars.username}@linux-${lib.removeSuffix "-linux" system}-${profile}"
+              "${username}@linux-${lib.removeSuffix "-linux" system}-${profile}"
               (mkHome system profile))
             linuxProfiles)
         [ "x86_64-linux" "aarch64-linux" ]);

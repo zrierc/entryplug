@@ -1,8 +1,8 @@
-{ inputs, vars, host, profile }:
+{ inputs, host, profile }:
 
 inputs.nix-darwin.lib.darwinSystem {
   specialArgs = {
-    inherit inputs vars host profile;
+    inherit inputs host profile;
     homeModule = ../profiles + "/${profile}/home.nix";
   };
 
