@@ -12,8 +12,7 @@
     computerName = host.computerName;
   };
 
-  # The account already exists on macOS; declaring home only keeps nix-darwin
-  # from trying to create it (creation requires an explicit uid).
+  # no uid: the account exists, nix-darwin would create it otherwise
   users.users.${host.primaryUser} = {
     home = host.home;
   };
@@ -22,9 +21,6 @@
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
 
-      # Disk pressure safety net: when free space drops below min-free and Nix
-      # needs to build or substitute, it runs GC until free space reaches
-      # max-free, or nothing collectible is left.
       min-free = "40G";
       max-free = "100G";
     };

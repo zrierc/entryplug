@@ -16,12 +16,10 @@
 
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
-    # Currently unused: helium is installed as the `helium-browser` cask so it
-    # can self-update. Kept so it can be switched back to a pinned nix package.
+    # unused: helium comes from the cask now
     helium = {
       url = "github:schembriaiden/helium-browser-nix-flake";
       inputs.nixpkgs.follows = "nixpkgs";
-      # Only used by helium for x86_64-darwin, which this repo does not build.
       inputs.nixpkgs-darwin.follows = "nixpkgs";
     };
 
@@ -123,8 +121,7 @@
           (lib.genAttrs profiles (profile: mkApp system profile))
           // { default = mkApp system "headless"; });
 
-      # `nix flake check` only builds checks for the current system, so these
-      # are safe to run on any machine (the darwin ones build on the Mac).
+      # checks are per system; the darwin ones only build on the Mac
       checks = lib.genAttrs allSystems
         (system:
           let

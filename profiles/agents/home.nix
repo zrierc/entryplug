@@ -21,8 +21,6 @@
     tldr
   ];
 
-  # neovim is the editor in this profile. vim stays installed and usable, it
-  # just stops owning EDITOR/VISUAL (modules/home/vim.nix sets it as a default).
   programs.vim.defaultEditor = false;
 
   # config/starship.toml is the source of truth, and home-manager takes over

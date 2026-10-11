@@ -1,6 +1,3 @@
-# pi + current extensions. settings.json is declared here; the activation step
-# runs `pi update --extensions`, which installs packages under ~/.pi/agent/npm
-# and never rewrites settings.json (verified against the pi bundle).
 { pkgs, lib, inputs, ... }:
 
 let
@@ -49,8 +46,7 @@ in
   home.file.".pi/agent/extensions/no-terminal-title.ts".source =
     ./extensions/no-terminal-title.ts;
 
-  # The guardrails extension rewrites this file itself, so copy it once instead
-  # of symlinking it into the read-only store.
+  # copied, not symlinked: the extension rewrites this file
   home.activation.piGuardrails = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ ! -e "$HOME/.pi/agent/extensions/guardrails.json" ]; then
       ${coreutils}/bin/install -m 0644 ${./guardrails.json} \

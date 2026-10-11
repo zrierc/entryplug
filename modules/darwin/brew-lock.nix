@@ -1,6 +1,3 @@
-# Replaces nix-homebrew's `brew` launcher on PATH with one that only allows
-# read-only commands plus `upgrade`. darwin-rebuild is unaffected: it invokes
-# "${config.homebrew.prefix}/bin/brew" by absolute path.
 { config, lib, pkgs, ... }:
 
 let
@@ -20,14 +17,11 @@ let
           exec "$real" "$@"
           ;;
         upgrade)
-          # Only version bumps for the declared casks. `brew upgrade` skips
-          # auto_updates casks unless --greedy is passed; do not pass it here,
-          # those apps update themselves.
+          # skips auto_updates casks unless --greedy; those update themselves
           exec "$real" "$@"
           ;;
         uninstall)
-          # Escape hatch for drift. A declared cask removed by mistake is
-          # reinstalled by the next activation, so this self-heals.
+          # drift escape hatch; declared casks return next activation
           exec "$real" "$@"
           ;;
         *)

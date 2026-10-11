@@ -1,5 +1,3 @@
-# macOS keeps the system /bin/zsh as login shell; home-manager only manages the
-# rc files, so no shell registration or chsh is needed.
 { config, pkgs, lib, ... }:
 
 lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
@@ -13,8 +11,7 @@ lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
       ignoreDups = true;
     };
 
-    # Only when starship is off: its init hook sets the prompt on every precmd,
-    # so this would be dead code in the agents profile.
+    # skipped when starship manages the prompt
     initContent = lib.mkIf (!config.programs.starship.enable) ''
       PROMPT='%F{green}%n@%m%f:%F{blue}%~%f%# '
     '';

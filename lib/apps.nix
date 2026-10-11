@@ -1,5 +1,3 @@
-# Profile entry point. Detects the current host and switches it into the
-# requested profile, using the same flake revision this app was invoked from.
 { lib
 , pkgs
 , self

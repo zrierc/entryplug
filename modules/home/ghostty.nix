@@ -1,8 +1,4 @@
-# Ghostty itself is a cask and updates itself; only its config is managed here.
-# Load order on macOS is $XDG_CONFIG_HOME/ghostty/config.ghostty, then
-# .../config, then the ~/Library/Application Support/com.mitchellh.ghostty/*
-# files, later ones winning — so an existing config in either place overrides
-# this one.
+# ~/Library/Application Support config loads after this file
 { pkgs, lib, ... }:
 
 lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
@@ -11,8 +7,7 @@ lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     font-thicken = true
     font-size = 14
 
-    # Lilex holds its programming ligatures in `calt`, not `liga`. Font
-    # features apply to every face; per-face targeting is not implemented yet.
+    # ligatures live in calt
     # Uncomment what you want:
     #
     # font-feature = -calt   # programming ligatures off

@@ -1,5 +1,3 @@
-# macOS-only profile: GUI apps come from environment.systemPackages (nix-darwin
-# copies them into /Applications/Nix Apps) plus the casks in modules/darwin/homebrew.nix.
 { pkgs, lib, ... }:
 
 {

@@ -3,7 +3,7 @@
 {
   programs.vim = {
     enable = true;
-    # Overridable: the agents profile points EDITOR at nvim instead.
+    # mkDefault so a profile can take EDITOR over
     defaultEditor = lib.mkDefault true;
     extraConfig = lib.fileContents ../../config/.vimrc;
   };

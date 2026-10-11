@@ -1,6 +1,3 @@
-# Aliases and completions shared by both shells, so bash and zsh cannot drift.
-# Profile modules may override single alias keys with lib.mkForce (see
-# modules/home/tools.nix).
 { pkgs, lib, ... }:
 
 let
@@ -21,9 +18,7 @@ let
     ls = "ls -G";
   };
 
-  # Every block is guarded: kubectl may be absent on a VM, and docker/orb come
-  # from OrbStack, which installs them into /usr/local/bin on first launch.
-  # orb/orbctl completion support is not documented, so failures are muted.
+  # guarded: kubectl may be missing, docker/orb come from OrbStack
   completions = shell: ''
     if command -v kubectl >/dev/null; then
       source <(kubectl completion ${shell})
@@ -40,8 +35,7 @@ let
     fi
   '';
 
-  # .bashrc is also read by non-interactive shells, so keep it to interactive
-  # ones. A `return` here would skip the rest of home-manager's bashrc.
+  # interactive shells only: .bashrc also runs non-interactively
   bashCompletions = ''
     if [[ $- == *i* ]]; then
     ${completions "bash"}
