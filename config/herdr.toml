@@ -1,0 +1,9 @@
+onboarding = false
+
+[keys]
+prefix = "ctrl+a"
+detach = "prefix+d"
+
+[ui]
+sidebar_start_collapsed=true
+tab_bar_position="bottom"
