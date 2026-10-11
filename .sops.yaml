@@ -1,0 +1,13 @@
+keys:
+  - &entryplug age1gn9htp855xwgqmx5p89p3q6htah0kmh6me8fh3svx8dqhqs305pqprqqjv
+
+creation_rules:
+  - path_regex: '(^|/)\.env(\..+)?$'
+    key_groups:
+      - age:
+          - *entryplug
+
+  - path_regex: '(^|/)([^/]*[._-])?\.?secrets?([._-][^/]*)?$'
+    key_groups:
+      - age:
+          - *entryplug

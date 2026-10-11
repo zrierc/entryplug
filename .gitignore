@@ -6,6 +6,8 @@
 !**/*.nix
 !/flake.nix
 !/flake.lock
+
+# git related
 !/.gitignore
 
 # docs
@@ -13,11 +15,11 @@
 !/docs/operations.md
 
 # repo payload, config, and dotfiles (non-nix)
+!.sops.yaml
 !config/
 !config/**
+!secrets/
+!secrets/**
 !modules/home/pi/extensions/
 !modules/home/pi/extensions/**
 !modules/home/pi/guardrails.json
-
-# vendored references
-ref/
