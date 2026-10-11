@@ -13,6 +13,7 @@
     bun
     nodejs_26
 
+    bitwarden-cli
     btop
     fd
     lazygit

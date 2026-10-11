@@ -7,5 +7,5 @@
   ];
 
   # needs a video player, so workstation not agents
-  home.packages = [ pkgs.bitwarden-cli pkgs.ani-cli ];
+  home.packages = [ pkgs.ani-cli ];
 }
