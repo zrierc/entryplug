@@ -213,6 +213,7 @@ profiles/<name>/ home.nix   home-manager content (cumulative imports)
 profiles/<name>/ system.nix nix-darwin system content
 modules/home/*   home-manager modules
 modules/darwin/* nix-darwin modules
+config/*         raw app config the modules read or link (nvim, starship, herdr)
 ```
 
 Profiles compose by importing the previous one: `agents` imports
@@ -298,27 +299,124 @@ Delete:
 One deliberate exception: the `font-feature` lines in `modules/home/ghostty.nix`
 are commented config meant to be uncommented in place.
 
+## Neovim
+
+`config/nvim` is a LazyVim checkout. `modules/home/nvim.nix` links `init.lua`,
+`lua/`, `stylua.toml` and `.neoconf.json` into `~/.config/nvim` as read-only
+store symlinks, one entry per file, so the directory itself stays a real
+directory and anything not declared there can still be written.
+
+That read-only config is what makes the two Lua changes necessary. Both files
+below are written *next to `init.lua`* by default, and both writers would fail
+on a store symlink, so each is repointed at `stdpath("data")`:
+
+| File | Default | Now | Set in |
+| --- | --- | --- | --- |
+| `lazy-lock.json` | `stdpath("config")` | `~/.local/share/nvim/lazy-lock.json` | `config/nvim/lua/config/lazy.lua`, lazy.nvim's `lockfile` option |
+| `lazyvim.json` | `stdpath("config")` | `~/.local/share/nvim/lazyvim.json` | `config/nvim/init.lua`, `vim.g.lazyvim_json` |
+
+Consequences worth knowing:
+
+- Plugin pins live outside the repo, so they are per-machine and not shared
+  between hosts. Delete `~/.local/share/nvim/lazy-lock.json` to let lazy.nvim
+  re-pin from whatever is currently checked out.
+- `:LazyExtras` writes to the relocated `lazyvim.json` and works normally.
+- Adding a plugin means editing `config/nvim/lua/plugins/` in the repo and
+  switching. Creating a file from inside `nvim` fails, because `lua/` is
+  read-only.
+- LazyVim's bootstrap still clones lazy.nvim into `~/.local/share/nvim/lazy`,
+  so a fresh machine needs `git` on PATH and a network connection on first
+  start. That directory is untouched by home-manager.
+
+Deliberately not managed: the LazyVim starter's `LICENSE`, `README.md` and
+`.gitignore`, and the two state files named above. The starter `.gitignore` in
+particular must not be copied into the repo — a nested `.gitignore` would
+silently change git's ignore rules for the whole `config/nvim` subtree.
+
+## herdr
+
+`config/herdr.toml` is linked to `~/.config/herdr/config.toml` read-only, which
+has one visible consequence: `herdr config reset-keys` rewrites and backs up
+that file, so it cannot work. Edit the repo file and switch, then apply it to a
+running server with `herdr server reload-config` (there is a `reload_config` key
+action too), or validate it first with `herdr config check`.
+
+Everything else in `~/.config/herdr` is herdr's own runtime state and is left
+alone: `session.json`, `.plugins.lock`, the client and server logs, the two
+sockets and `session-snapshots/`. `default.toml` is the annotated reference
+config, embedded in the herdr binary and written back on demand — it is not user
+config and is not tracked here.
+
+herdr is a pinned flake input rather than a nixpkgs package because its config
+keys are version-specific; this repo declares `v0.9.3`. `herdr update` downloads
+and installs its own build outside the nix store, which would leave two herdr
+binaries on the machine with the store one still winning on PATH. To change
+version, bump `inputs.herdr` in `flake.nix`.
+
 ## Prompt (starship)
 
-The agents profile enables starship with **no** `settings` and no `presets`. That
-is deliberate: home-manager writes `~/.config/starship.toml` only when one of
-those is set, and exports `STARSHIP_CONFIG` either way, so the file stays loose
-and the prompt can be explored without a switch per try:
+`config/starship.toml` is the source of truth. `profiles/agents/home.nix` reads
+it with `builtins.fromTOML` and hands it to `programs.starship.settings`, so
+home-manager generates `~/.config/starship.toml` and exports `STARSHIP_CONFIG`
+pointing at it.
 
-```sh
-starship preset --list
-starship preset tokyo-night -o ~/.config/starship.toml
-```
+starship only reads `$STARSHIP_CONFIG` or `$XDG_CONFIG_HOME/starship.toml`. It
+never looks in a `starship/` subdirectory, which is why the file lives at that
+path and not `~/.config/starship/starship.toml`.
 
-When the config stops changing, declare it in `profiles/agents/home.nix`:
+The file is `starship print-config` output: 109 module tables, each one mostly
+restating the value its module already has. The top-level globals were stripped
+before it was committed, because every one of them was a verbatim copy of the
+built-in default:
 
-- `programs.starship.presets = [ "tokyo-night" ];` — home-manager merges the
-  shipped preset itself, later entries winning.
-- `programs.starship.settings = builtins.fromTOML (builtins.readFile ../../config/starship.toml);`
-  — keeps the tweaked TOML in the repo as the source of truth.
+| Dropped | Built-in default |
+| --- | --- |
+| `format` | `"$all"` |
+| `right_format` | `""` |
+| `continuation_prompt` | `"[∙](bright-black) "` |
+| `scan_timeout` | `30` |
+| `command_timeout` | `500` |
+| `add_newline` | `true` |
+| `follow_symlinks` | `true` |
 
-Either way home-manager takes the file over and the loose one is moved aside as
-`starship.toml.hm-backup`. Symbol-heavy presets need a Nerd Font in the
-terminal. While starship is on, the plain `PROMPT` in `modules/home/zsh.nix` is
-skipped (`lib.mkIf (!config.programs.starship.enable)`) because starship resets
-the prompt on every `precmd`.
+Removing them changes nothing, and `format` is the one worth being clear about:
+`"$all"` *is* the default, not an opt-in. Deleting it does not shorten the
+prompt. `starship print-config` prints the effective config including these
+defaults, which is where the comparison above comes from.
+
+`$schema` is kept so an editor can complete the file.
+
+Exactly one key in the whole file differs from what a stock starship would emit:
+
+| Key | Repo | Stock | Effect |
+| --- | --- | --- | --- |
+| `nix_shell.symbol` | `"❄️ "` | `"❄️  "` | One trailing space instead of two |
+
+`nix_shell.heuristic` deserves a note even though it sits at its default
+(`false`). It is not a directory check. When `IN_NIX_SHELL` is unset it scans
+`$PATH` for any entry starting with `/nix/store` and, on a match, renders the
+module in the `Unknown` state. This machine's PATH has three such entries
+(nodejs, fd, ripgrep), so turning it on shows the segment in every directory,
+and because `unknown_msg` is `""` it shows up as a bare `❄️` with no label.
+Leave it `false`.
+
+Everything else is the default restated, so tuning the prompt means editing
+module tables, not globals. For a shorter prompt, set `format` explicitly to the
+segments you want, or set the ones you do not want to `disabled = true`.
+
+Editing rules:
+
+- Change `config/starship.toml`, never `~/.config/starship.toml`, which is a
+  read-only store symlink after activation.
+- Comments do not survive. `fromTOML` parses them away, so the generated file is
+  values only. Keep reasoning in the repo file and here.
+- Table order in the generated file is the TOML generator's, not the repo
+  file's. A round trip through Nix is verified value-identical; the generated
+  file is smaller only because comments and blank lines are gone.
+- Modules that draw symbols need a Nerd Font in the terminal. Only the
+  workstation profile installs Lilex, so segments can render as boxes over SSH
+  or on a bare headless machine.
+
+While starship is on, the plain `PROMPT` in `modules/home/zsh.nix` is skipped
+(`lib.mkIf (!config.programs.starship.enable)`) because starship resets the
+prompt on every `precmd`.
