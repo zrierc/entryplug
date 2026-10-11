@@ -4,6 +4,7 @@
     ../../modules/home/shell-common.nix
     ../../modules/home/bash.nix
     ../../modules/home/zsh.nix
+    ../../modules/home/direnv.nix
     ../../modules/home/vim.nix
     ../../modules/home/git.nix
     ../../modules/home/fzf.nix
