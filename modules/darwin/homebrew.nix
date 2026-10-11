@@ -22,8 +22,10 @@
       upgrade = false;
     };
 
-    # only casks with no usable nixpkgs aarch64-darwin package
+    # no usable nixpkgs package, or a driver and privileged daemons the store
+    # copy cannot install (karabiner-elements)
     casks = [
+      "karabiner-elements"
       "obs"
       "steam"
       "orbstack"

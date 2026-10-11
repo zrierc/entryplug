@@ -7,8 +7,9 @@ Homebrew exists here for one reason: a few GUI apps have no usable nixpkgs
 Brew is treated as a cask installer that belongs to the configuration, not as a
 package manager you use by hand.
 
-Casks live in `modules/darwin/homebrew.nix`. Current list: obs, steam, orbstack,
-vorssaint, rustdesk, anydesk, tailscale-app, helium-browser, vesktop, vlc.
+Casks live in `modules/darwin/homebrew.nix`. Current list: karabiner-elements,
+obs, steam, orbstack, vorssaint, rustdesk, anydesk, tailscale-app,
+helium-browser, vesktop, vlc.
 
 Two GUI apps moved from nixpkgs to a cask even though nixpkgs packages them:
 `helium-browser` (the flake's package disables the browser's self-update) and
@@ -63,10 +64,10 @@ A refused command prints where to add the package instead.
   in `modules/darwin/homebrew.nix`, which refreshes cask data over plain HTTP
   and never touches the synthetic git repo.
 - `brew upgrade` skips `auto_updates: true` casks unless `--greedy` is passed.
-  Six of the eight declared casks are flagged `auto_updates` (obs, steam,
-  orbstack, vorssaint, tailscale-app, helium-browser), so those update through
-  their own updaters and brew leaves them alone. Only rustdesk and anydesk are
-  brew-managed. Do not pass `--greedy`: it makes brew fight the apps' updaters.
+  Every declared cask except rustdesk and anydesk is flagged `auto_updates`, so
+  those update through their own updaters and brew leaves them alone; only
+  rustdesk and anydesk are brew-managed. Do not pass `--greedy`: it makes brew
+  fight the apps' updaters.
 
 ### Drift and removals
 
@@ -315,6 +316,71 @@ New machine, in order:
 Rotation: revoke the old public key at the host, replace the private key in the
 secret manager, copy the new file to `~/.ssh/key`. Nothing in the repo changes,
 because the repo never held the key.
+
+## Keyboard
+
+Caps Lock is the escape key when tapped and control when held, and the escape
+key is Caps Lock. Both platforms use the same mapping, with different tools.
+
+### macOS (Karabiner-Elements)
+
+Karabiner comes from the Homebrew cask, not nixpkgs. It needs a DriverKit
+virtual-HID system extension and privileged daemons; the nixpkgs package ships
+the driver as a separate output and rewrites the daemon plists to point into
+the store, so its app bundle is not a drop-in replacement for the official
+installer. This is the one cask in the list whose nixpkgs package exists and is
+deliberately not used.
+
+`config/karabiner.json` is linked read-only to `~/.config/karabiner/karabiner.json`.
+Karabiner writes that file whenever anything is changed in its own UI, so the
+GUI cannot save edits — same rule as the herdr config: change the repo file and
+switch. The rule language: `to_if_alone` fires on release when no other key was
+pressed, `to` holds while the key is down.
+
+Four permissions are granted by hand on first run, from System Settings:
+background services (and Karabiner must stay enabled in "Allow in the
+Background"), Accessibility, Input Monitoring, and the driver extension.
+Closing the settings window is fine — the menu bar app and the daemons keep
+running; quitting from the menu bar turns the remap off.
+
+The Caps Lock LED is no longer driven by the physical key, because the key no
+longer sends `caps_lock`. Whether the LED follows when escape sends `caps_lock`
+is worth checking on the machine. `basic.to_if_alone_timeout_milliseconds` is
+1000: a tap released within a second with no other key becomes escape, anything
+else is control.
+
+Resource notes: idle cost is small, but the privileged core service has a
+history of slow memory growth (an issue filed against 15.7.0 measured about
+10MB/day). If it climbs, quit and reopen Karabiner from the menu bar. A mouse
+with an extreme polling rate has also been reported to pin the grabber at 100%
+CPU.
+
+### Linux (keyd)
+
+`config/keyd/default.conf` is the same mapping in keyd syntax:
+
+```conf
+[main]
+capslock = overload(control, esc)
+esc = capslock
+```
+
+It is committed but not wired. keyd grabs input devices directly and needs
+root, so it belongs to a system layer: home-manager has no keyd module, and this
+repo's Linux side is standalone home-manager with no `nixosConfigurations`.
+When the `desktop` profile lands, this file goes to `services.keyd` in the
+NixOS configuration.
+
+Until then, per machine: install keyd, copy the file to
+`/etc/keyd/default.conf`, start the daemon. Validate the syntax without root or
+a reboot first:
+
+```sh
+keyd check config/keyd/default.conf
+```
+
+`overload(control, esc)` is hold/tap in one binding; unlike Karabiner it has no
+timeout, so a tap is always escape and a hold is always control.
 
 ## Fonts
 
