@@ -14,14 +14,11 @@
     nodejs_26
 
     btop
-    eza
     fd
     lazygit
     neovim
-    ripgrep
     ripgrep-all
     tldr
-    zoxide
   ];
 
   # neovim is the editor in this profile. vim stays installed and usable, it
