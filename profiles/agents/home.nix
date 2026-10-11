@@ -6,6 +6,7 @@
     ../../modules/home/tools.nix
     ../../modules/home/pi
     ../../modules/home/herdr.nix
+    ../../modules/home/nvim.nix
   ];
 
   home.packages = with pkgs; [
