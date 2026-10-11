@@ -181,8 +181,12 @@ policy above.
 
 ### Values
 
-`vars.nix` holds the only non-machine values: `username`, `gitUser`,
-`gitEmail`. The git identity is a placeholder until filled in.
+`hosts/<host>.nix` is the only place machine facts live: hostname, platform,
+primary user, home directory and the supported profiles. That user name is
+reused for the generic Linux `homeConfigurations`, which have no host entry of
+their own. The git identity is not a Nix value: `modules/home/git.nix` writes
+it from the secret manager at activation, and the private keys are restored
+from the same place by hand. See Git below.
 
 ### Where a package goes
 
@@ -205,7 +209,6 @@ a cask.
 
 ```text
 flake.nix        inputs + outputs (apps, checks, darwinConfigurations, homeConfigurations)
-vars.nix         user values
 lib/apps.nix     profile wrapper (host detection, guards, switch command)
 lib/mk-host.nix  nix-darwin configuration for one host + profile
 hosts/*.nix      machine facts: hostname, platform, user, home, profiles
@@ -250,10 +253,68 @@ them and fail without a darwin builder.
 
 ### Secrets
 
-`~/.config/sops/age/keys.txt` is generated per machine on first switch. A new
-machine gets a new key, so existing sops secrets are only decryptable where the
-matching key is present. Sharing secrets across machines needs a separate
-key-distribution decision.
+`secrets/secret.yaml` is sops-encrypted to the age recipient in `.sops.yaml`
+and holds the git identities plus the provider API keys.
+
+The private half lives at `~/.config/sops/age/keys.txt`. It is not in the repo,
+so every new machine needs it restored by hand from the secret manager.
+`modules/home/secrets.nix` generates a key when the file is missing, but a
+generated key cannot decrypt an existing secret, so that file is a placeholder
+to overwrite. Without the real key, activation warns and the git identities
+stay unwritten; the switch itself still completes.
+
+## Git
+
+Each directory under `~/Dev` has its own account. The directory decides the
+commit identity and the ssh key, and the remote stays a plain
+`git@github.com:owner/repo`:
+
+| Directory        | Identity   | ssh key          |
+| ---------------- | ---------- | ---------------- |
+| `~/Dev/works`    | `work`     | `github_primary` |
+| `~/Dev/college`  | `college`  | `github_college` |
+| `~/Dev/personal` | `personal` | `github_primary` |
+| `~/Dev/projects` | `personal` | `github_primary` |
+| `~/Dev/learn`    | `personal` | `github_primary` |
+
+`modules/home/git.nix` generates one `includeIf` block per directory: the first
+sets `core.sshCommand` to `ssh -i <key> -o IdentitiesOnly=yes`, the second
+points at the identity file. The trailing slash makes the pattern cover
+everything below the directory, submodules included. `IdentitiesOnly=yes` means
+the directory's key is the only one tried, so a repository on another host
+inside `~/Dev/college` fails instead of falling back to another account.
+
+No `Host` aliases are involved: the remote stays `git@github.com:...` and the
+key is chosen per directory, so nothing in the ssh config has to be maintained.
+A repository cloned through an old alias keeps working through its own `Host`
+block. A per-repo override is the ordinary local `git config user.email`, which
+wins over the include.
+
+Identities come from `git.work`, `git.college` and `git.personal` in the secret
+manager and are written at activation into `~/.config/git/identities/<id>.inc`
+at 0600. A missing age key, or a key missing from the secret, produces a warning
+and no file — never a partial file or a `null` value.
+
+Private keys are plain files under `~/.ssh/key` at 0600 and are deliberately not
+repo secrets. A private key in git history can never be removed, and storing all
+three accounts behind the age key would make one leaked file enough to push as
+anyone. Each account has exactly one key, so `work` and `personal` share
+`github_primary`, and the key name above is also the file name.
+
+New machine, in order:
+
+1. Install Nix and run the profile apps. The flake is fetched over HTTPS, so the
+   switches themselves need no git credentials; a private repo would need a
+   token for this step.
+2. Restore `~/.config/sops/age/keys.txt` and `~/.ssh/key/github_primary` plus
+   `github_college` from the secret manager, keys at 0600.
+3. Switch once more: the identities are written and the warnings stop.
+4. Clone with `git@github.com:...`. The directory decides which key and which
+   identity the repository uses.
+
+Rotation: revoke the old public key at the host, replace the private key in the
+secret manager, copy the new file to `~/.ssh/key`. Nothing in the repo changes,
+because the repo never held the key.
 
 ## Fonts
 
