@@ -2,24 +2,37 @@
 *
 
 # nix
-!*/
-!**/*.nix
-!/flake.nix
+!/hosts/
+!/hosts/**/
+!/lib/
+!/lib/**/
+!/modules/
+!/modules/**/
+!/packages/
+!/packages/**/
+!/profiles/
+!/profiles/**/
+!/*.nix
 !/flake.lock
+!/hosts/**/*.nix
+!/lib/**/*.nix
+!/modules/**/*.nix
+!/packages/**/*.nix
+!/profiles/**/*.nix
 
 # git related
 !/.gitignore
 
 # docs
+!/docs/
 !/README.md
 !/docs/operations.md
 
 # repo payload, config, and dotfiles (non-nix)
-!.sops.yaml
 !config/
 !config/**
 !secrets/
 !secrets/**
-!modules/home/pi/extensions/
+!.sops.yaml
 !modules/home/pi/extensions/**
 !modules/home/pi/guardrails.json
