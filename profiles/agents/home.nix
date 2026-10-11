@@ -28,11 +28,15 @@
   # just stops owning EDITOR/VISUAL (modules/home/vim.nix sets it as a default).
   programs.vim.defaultEditor = false;
 
-  # No settings and no presets on purpose: home-manager then leaves
-  # ~/.config/starship.toml alone (it only writes it when one of those is set),
-  # so the prompt can be explored freely with `starship preset <name> -o`.
-  # Declare it here once the config stops changing. See docs/operations.md.
-  programs.starship.enable = true;
+  # config/starship.toml is the source of truth, and home-manager takes over
+  # ~/.config/starship.toml on activation, moving any loose file aside as
+  # starship.toml.hm-backup. The repo file is a full default dump with the
+  # top-level globals stripped, so the prompt keeps starship's built-in format
+  # and each module table only styles its own segment. See docs/operations.md.
+  programs.starship = {
+    enable = true;
+    settings = builtins.fromTOML (builtins.readFile ../../config/starship.toml);
+  };
 
   home.sessionVariables = {
     EDITOR = "nvim";
