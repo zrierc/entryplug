@@ -15,6 +15,8 @@ let
     learn = { id = "personal"; key = "github_primary"; };
   };
 
+  keyNames = lib.unique (map (entry: entry.key) (lib.attrValues dirs));
+
   # sshCommand is static config, the identity file is written by activation
   # because the store cannot hold decrypted values
   includeFor = dir: entry: [
@@ -66,5 +68,13 @@ in
         mv -f "$tmp" "$identities/$id.inc"
       done
     fi
+  '';
+
+  # warn at switch time, so a missing key does not surface as "Permission denied" on the first push
+  home.activation.gitKeys = lib.hm.dag.entryAfter [ "gitIdentities" ] ''
+    for name in ${lib.escapeShellArgs keyNames}; do
+      [ -f "$HOME/.ssh/key/$name" ] \
+        || echo "entryplug: missing ~/.ssh/key/$name; restore it from the secret manager" >&2
+    done
   '';
 }
