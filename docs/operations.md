@@ -404,6 +404,42 @@ broken, pin an older `fontforge` in that file.
 `~/Library/Application Support/com.mitchellh.ghostty/*` files after it, so a
 config there would win.
 
+## Shell
+
+The alias table lives in `modules/home/shell-common.nix` and is split by platform, so
+`headless` gets `ls`, `ll`, `la`, `l`, `cat` and `k`, and `agents`/`workstation`
+inherit them. Two rules hold that together.
+
+### The eza aliases must be forced
+
+`modules/home/tools.nix` redefines `ls`, `ll`, `la` and `l` with `lib.mkForce` for
+`agents`. That is not optional. `programs.eza` emits its own `ls`/`ll`/`la` with
+`lib.mkDefault`, the weakest priority, so the plain definitions in
+`shell-common.nix` (normal priority) would silently win and the profile would fall
+back to `ls` with eza installed. Priority order, lowest wins: `mkForce` 50, a normal
+definition 100, `mkDefault` 1000.
+
+The forced aliases call `eza` rather than repeating `--icons --git
+--group-directories-first`: `programs.eza` puts those flags on an `eza` alias, and
+shell aliases expand recursively on the command word, so `ls` reaches them.
+
+`headless` never imports `tools.nix`, so on a VM those four names stay the plain
+`ls` family, colour included (`ls --color=auto` on Linux, `ls -G` on macOS).
+
+### bat
+
+`modules/home/bat.nix` sits in the headless layer, not `tools.nix`, because `cat` is
+aliased to it in the shared table. `shell-common.nix` asserts that
+`programs.bat.enable` is true, so removing the module fails the build instead of
+shipping a `cat` that points at nothing.
+
+The theme is `ansi`, which follows the terminal's own palette. `theme-dark` and
+`theme-light` are deliberately not used: bat only consults them after detecting the
+terminal background by querying it, which does not happen when output is piped and
+otherwise depends on the terminal answering that query. `ansi` has nothing to detect,
+so it applies in a pipe, over ssh and on a VM alike. `style = "plain"` with
+`paging = "never"` reproduces what the old inline `cat` flags did.
+
 ## Comment style
 
 Comments explain **why**, never what the code does, and are English only.

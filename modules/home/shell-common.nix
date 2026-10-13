@@ -1,11 +1,11 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 
 let
   shared = {
     ll = "ls -alF";
     la = "ls -A";
     l = "ls -CF";
-    cat = "bat --color=auto --decorations=never --paging=never";
+    cat = "bat";
     k = "kubectl";
   };
 
@@ -44,6 +44,15 @@ let
 in
 
 {
+  # bat comes from the headless layer; without that module the alias below would
+  # point at a binary nobody installs
+  assertions = [
+    {
+      assertion = config.programs.bat.enable;
+      message = "shell-common aliases cat to bat, but programs.bat is not enabled in this profile";
+    }
+  ];
+
   programs.bash.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isLinux linux;
   programs.zsh.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin darwin;
 

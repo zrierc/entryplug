@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -13,14 +13,24 @@
     bun
     nodejs_26
 
+    awscli2
     bitwarden-cli
     btop
-    fd
     lazygit
     neovim
     ripgrep-all
+    terraform
     tldr
   ];
+
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+    GOPATH = "${config.home.homeDirectory}/Dev/go";
+    GOBIN = "${config.home.homeDirectory}/Dev/go/bin";
+  };
+
+  home.sessionPath = [ "$HOME/Dev/go/bin" ];
 
   programs.vim.defaultEditor = false;
 
@@ -32,10 +42,5 @@
   programs.starship = {
     enable = true;
     settings = builtins.fromTOML (builtins.readFile ../../config/starship.toml);
-  };
-
-  home.sessionVariables = {
-    EDITOR = "nvim";
-    VISUAL = "nvim";
   };
 }

@@ -1,6 +1,7 @@
 {
   imports = [
     ../../modules/home/packages.nix
+    ../../modules/home/bat.nix
     ../../modules/home/shell-common.nix
     ../../modules/home/bash.nix
     ../../modules/home/zsh.nix

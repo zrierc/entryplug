@@ -2,11 +2,11 @@
 
 {
   home.packages = with pkgs; [
-    bat
     curl
     htop
     kubectl
     ripgrep
+    rsync
     tree
     wget
   ];
