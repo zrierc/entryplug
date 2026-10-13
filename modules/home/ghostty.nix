@@ -3,6 +3,9 @@
 
 lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
   home.file.".config/ghostty/config.ghostty".text = ''
+    # built-in theme
+    theme = light:Flexoki Light,dark:Poimandres Darker
+
     font-family = Lilex Nerd Font Mono
     font-thicken = true
     font-size = 14
