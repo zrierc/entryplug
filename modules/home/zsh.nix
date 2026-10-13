@@ -71,6 +71,9 @@ lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
         zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
         zstyle ':completion:*' special-dirs true
         zstyle ':completion:*' list-colors ""
+        # the next two were oh-my-zsh's, and they change what a case-insensitive match shows
+        zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
+        zstyle '*' single-ignored show
 
         autoload -Uz edit-command-line
         zle -N edit-command-line
