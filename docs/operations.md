@@ -440,6 +440,56 @@ otherwise depends on the terminal answering that query. `ansi` has nothing to de
 so it applies in a pipe, over ssh and on a VM alike. `style = "plain"` with
 `paging = "never"` reproduces what the old inline `cat` flags did.
 
+### History
+
+The size is declared once in `modules/home/shell-common.nix` and feeds
+`programs.bash.historySize`/`historyFileSize` and `programs.zsh.history.size`/`save`,
+so the two shells cannot drift. It is **8000**.
+
+zsh carries the rest: `append`, `share`, `extended`, `ignoreSpace`, `ignoreAllDups`,
+`saveNoDups`, `ignoreDups` and `findNoDups`. Between them, a command that starts with
+a space is never written, duplicates are never stored, never written and never shown
+in a search, and two shells running at once see each other's commands immediately.
+`expireDuplicatesFirst` is deliberately unset — the duplicate options make it moot.
+
+The file is `~/.zsh_history`, which on a fresh machine does not exist yet and is **not**
+copied from anywhere: this repo configures machines, it does not migrate data into
+them. Unit-00's history, caches and application state stay on unit-00.
+
+The options oh-my-zsh used to set silently are decided one by one rather than inherited:
+the eight worth keeping are in `setOptions`, the size is the shared 8000 above, and the
+history rules map onto `programs.zsh.history`. `hist_verify` is dropped because
+`magic-space` supersedes it, and `flowcontrol` and `menu_complete` are already off in a
+stock zsh.
+
+### zsh behaviour that oh-my-zsh supplied
+
+Dropping oh-my-zsh also drops things that were never in a config file here, so they
+are reproduced explicitly in `modules/home/zsh.nix`'s `initContent`:
+
+- completion styles — `zmodload zsh/complist`, `menu select`, a case-insensitive
+  `matcher-list`, `special-dirs` and `list-colors`. Without them `cd doc<Tab>` stops
+  completing `Documents` and the menu loses its selection highlight.
+- Ctrl+←/→ word motion: the terminal sends the sequence either way, but zsh has no
+  binding for it until one is written.
+- `magic-space` on space and `^X^E` for `edit-command-line`, both of which oh-my-zsh
+  already provided.
+- `...` and `....` as global aliases; its `cd -N` family is not reproduced.
+
+`^Y` for `redo`, `zmv` with `zcp`/`zln`, and the `chpwd` venv hook are additions
+rather than replacements. The hook activates `.venv` or `venv` found above `$PWD` and
+returns without doing anything when direnv owns the directory (`$DIRENV_DIR` set, or an
+`.envrc` in the path), so the two never fight over the same project.
+
+### GNU tools on macOS
+
+`pkgs.coreutils-prefixed` is installed, not `pkgs.coreutils`. The prefixed build gives
+`gshuf` — which `godsWords` needs, because macOS ships no `shuf` — while leaving the
+BSD tools alone. Plain `coreutils` would put GNU `ls`, `date` and `stat` ahead of them
+in `PATH`, where the same flags quietly mean something else: GNU `ls -G` is
+`--no-group` rather than colour, BSD `date -j` does not exist, and BSD `stat -f` is not
+GNU's `-f`. Every one of those fails silently rather than loudly.
+
 ## Comment style
 
 Comments explain **why**, never what the code does, and are English only.
@@ -583,3 +633,29 @@ Editing rules:
 While starship is on, the plain `PROMPT` in `modules/home/zsh.nix` is skipped
 (`lib.mkIf (!config.programs.starship.enable)`) because starship resets the
 prompt on every `precmd`.
+
+## Updating
+
+There is no `omz update` to run by hand any more. Everything a profile installs is
+pinned by `flake.lock`, and one command moves it:
+
+```sh
+nix flake update              # every input: nixpkgs, home-manager, nix-darwin, ...
+nix flake update nixpkgs      # or just one
+nix run .#agents -- --dry-run # build it without activating
+nix run .#agents              # then switch
+```
+
+| Piece | How it updates |
+| --- | --- |
+| shell, zsh plugins, CLI tools (eza, bat, fd, fzf, zoxide, neovim, tmux, rsync, …) | `nix flake update nixpkgs` — the zsh plugins come from nixpkgs, not from a vendored clone |
+| home-manager and nix-darwin themselves | the same `nix flake update`; both are flake inputs, so there is no channel to follow |
+| pi | `nix flake update pi` for the binary; its npm extensions refresh at every activation through `pi update --extensions` |
+| herdr | `nix flake update herdr`. Its config keys are version-specific, so re-read `config/herdr.toml` after a bump |
+| Lilex font | edit `version` and the `hash` in `packages/lilex-nerd-font.nix` |
+| Homebrew | `nix flake update nix-homebrew` refreshes Homebrew itself. `onActivation.upgrade` is false, so a switch never chases cask versions: casks marked `auto_updates` update themselves, and `brew upgrade` (allowed by the shim) is how rustdesk and anydesk move |
+| neovim plugins | **not** through nix: lazy.nvim pins them per machine, with the lockfile in `stdpath("data")`. Use `:Lazy update` inside nvim |
+| GUI apps from nixpkgs (ghostty-bin, firefox-bin, bitwarden-desktop, mpv) | `nix flake update nixpkgs` + switch |
+
+Not managed here: the Nix installation itself (upgrade with the official installer) and
+anything installed by hand outside this repo.

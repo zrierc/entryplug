@@ -5,9 +5,8 @@ lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     enable = true;
     enableCompletion = true;
 
+    # size and file size come from shell-common.nix, which both shells read
     historyControl = [ "ignoreboth" ];
-    historySize = 1000;
-    historyFileSize = 2000;
 
     shellOptions = [
       "histappend"

@@ -1,12 +1,24 @@
 { pkgs, lib, config, ... }:
 
 let
+  # declared once for both shells: bash and zsh
+  historySize = 8000;
+
   shared = {
+    g = "git";
+    gl = "git pull";
+    gd = "git diff";
+    gp = "git push";
+    gf = "git fetch";
+
     ll = "ls -alF";
     la = "ls -A";
     l = "ls -CF";
+
     cat = "bat";
     k = "kubectl";
+    please = "sudo";
+    svi = "sudo vi";
   };
 
   linux = shared // {
@@ -55,6 +67,11 @@ in
 
   programs.bash.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isLinux linux;
   programs.zsh.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin darwin;
+
+  programs.bash.historySize = historySize;
+  programs.bash.historyFileSize = historySize;
+  programs.zsh.history.size = historySize;
+  programs.zsh.history.save = historySize;
 
   programs.bash.bashrcExtra = lib.mkIf pkgs.stdenv.hostPlatform.isLinux bashCompletions;
   programs.zsh.initContent = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (completions "zsh");
