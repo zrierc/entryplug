@@ -4,6 +4,7 @@
   imports = [
     ../headless/home.nix
     ../../modules/home/tools.nix
+    ../../modules/home/scripts/hrdr.nix
     ../../modules/home/pi
     ../../modules/home/herdr.nix
     ../../modules/home/nvim.nix
@@ -34,11 +35,7 @@
 
   programs.vim.defaultEditor = false;
 
-  # config/starship.toml is the source of truth, and home-manager takes over
-  # ~/.config/starship.toml on activation, moving any loose file aside as
-  # starship.toml.hm-backup. The repo file is a full default dump with the
-  # top-level globals stripped, so the prompt keeps starship's built-in format
-  # and each module table only styles its own segment. See docs/operations.md.
+  # load from dedicated config file because it'll be too long
   programs.starship = {
     enable = true;
     settings = builtins.fromTOML (builtins.readFile ../../config/starship.toml);

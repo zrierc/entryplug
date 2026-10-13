@@ -10,6 +10,7 @@
     ../../modules/home/git.nix
     ../../modules/home/fzf.nix
     ../../modules/home/tmux.nix
+    ../../modules/home/scripts/tmux.nix
     ../../modules/home/secrets.nix
   ];
 }

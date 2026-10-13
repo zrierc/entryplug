@@ -19,6 +19,9 @@ let
     k = "kubectl";
     please = "sudo";
     svi = "sudo vi";
+
+    # the tmux project picker; agents forced-overrides it to the herdr one
+    ts = "tmux-sessionizer";
   };
 
   linux = shared // {

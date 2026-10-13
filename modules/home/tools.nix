@@ -14,6 +14,9 @@ let
     vi = "command vim";
     vim = "nvim";
     lg = "lazygit";
+    # forced: shell-common points ts at the tmux picker for the headless layer
+    ts = lib.mkForce "hrdr-sessionizer";
+    hs = "hrdr-sessionizer";
   };
 in
 
@@ -39,4 +42,10 @@ in
 
   programs.zsh.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (ezaAliases // agentsAliases);
   programs.bash.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (ezaAliases // agentsAliases);
+
+  # INFO: currently disabled
+  # ^z opens the project picker.
+  # programs.zsh.initContent = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin ''
+  #   bindkey -s '^z' 'hdr-sessionizer^M'
+  # '';
 }

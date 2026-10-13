@@ -468,8 +468,9 @@ Dropping oh-my-zsh also drops things that were never in a config file here, so t
 are reproduced explicitly in `modules/home/zsh.nix`'s `initContent`:
 
 - completion styles — `zmodload zsh/complist`, `menu select`, a case-insensitive
-  `matcher-list`, `special-dirs` and `list-colors`. Without them `cd doc<Tab>` stops
-  completing `Documents` and the menu loses its selection highlight.
+  `matcher-list`, `special-dirs`, `list-colors`, plus oh-my-zsh's `cd` tag-order and
+  `single-ignored show`. Without the matcher, `cd doc<Tab>` stops completing
+  `Documents`; without the last two, a lone case-folded match is not offered.
 - Ctrl+←/→ word motion: the terminal sends the sequence either way, but zsh has no
   binding for it until one is written.
 - `magic-space` on space and `^X^E` for `edit-command-line`, both of which oh-my-zsh
@@ -659,3 +660,57 @@ nix run .#agents              # then switch
 
 Not managed here: the Nix installation itself (upgrade with the official installer) and
 anything installed by hand outside this repo.
+
+## Keys and the helper scripts
+
+`config/herdr.toml` sets the prefix to `ctrl+a` (the same as tmux, so nesting works
+through herdr's own double-press passthrough), adds `last_pane` on `prefix+a`, and moves
+tab switching to `alt+h` / `alt+l`. Everything else is herdr's default, deliberately:
+its `prefix+h/j/k/l`, `prefix+v`, `prefix+minus`, `prefix+z` and `prefix+[` already match
+what tmux was configured to do.
+
+`alt+arrows` are **not** bound. herdr 0.9.3 went out of its way to make Escape-prefixed
+shortcuts reach panes again, which is what gives Ghostty's Option+Left/Right word motion
+inside shells and editors; binding those keys to resize pane would take them away from
+every program running in one.
+
+Three `[[keys.command]]` entries run the helper scripts, which live in
+`modules/home/scripts/hrdr.nix` and are only installed by the **agents** profile, because they
+need `herdr` and `nvim`:
+
+| Key | Type | Script | What it does |
+| --- | --- | --- | --- |
+| `prefix+f` | popup | `hrdr-sessionizer` | fzf over `~/Dev`, then focus a herdr workspace whose label matches the path, or create one |
+| `prefix+i` | pane | `hrdr-cheat` | fzf over the two lists in `config/cht-*`, `curl` cht.sh, pager |
+| `prefix+t` | popup | `hrdr-todo` | `TODO.md` in the pane's directory, else `~/Documents/notes/todo.md` |
+
+A fourth, `hrdr-windowizer <label> <command…>`, is not bound to a key: it creates or finds
+a labelled tab and runs the command in it, which is what scripts and hooks call.
+
+Two things about these are worth knowing. A workspace carries **no cwd**, so
+`hrdr-sessionizer` matches on the label, which is the project's path below `$HOME` — that
+is what keeps two projects with the same basename apart. And a tab carries no pane
+reference either, so `hrdr-windowizer` finds a tab's pane through `herdr pane list`.
+
+Clipboard work needs no wiring at all. herdr raises its own clipboard event and the
+client writes it, so there is no command to configure, unlike tmux's
+`copy-pipe-and-cancel`.
+
+## tmux
+
+tmux stays, and it is in the headless layer, so the Mac has it too. It is the fallback
+for a machine where herdr is not installed, and `modules/home/tmux.nix` keeps only what
+that needs: prefix `C-a` (home-manager generates the matching `send-prefix`), base index
+1, vi keys with `h/j/k/l` pane selection and `H/J/K/L` resize, `M-h`/`M-l` for windows,
+`"`/`%` splits that keep the current path, and — on darwin only, where `pbcopy` exists —
+a copy-mode `y`. No TPM, no resurrect, no continuum, no vim-tmux-navigator.
+
+The headless layer also ships the tmux counterparts of those pickers —
+`tmux-sessionizer`, `tmux-windowizer` and `tmux-cht.sh` — so a machine without herdr
+still has them, and `ts` points at `tmux-sessionizer` there. The agents profile
+forces `ts` (and adds `hs`) over to `hrdr-sessionizer`, which is why the alias is a
+`lib.mkForce` in `tools.nix` rather than a second definition.
+
+Both multiplexers share the `C-a` prefix on purpose. Nested, one eats the first press and
+a double press reaches the inner one; the cost is that herdr cannot detect an agent
+running behind tmux, so use tmux for plain shells and herdr for agents.

@@ -3,6 +3,27 @@ onboarding = false
 [keys]
 prefix = "ctrl+a"
 detach = "prefix+d"
+last_pane = "prefix+a"
+previous_tab = "alt+h"
+next_tab = "alt+l"
+
+[[keys.command]]
+key = "prefix+f"
+type = "popup"
+command = "hrdr-sessionizer"
+description = "jump to a project"
+
+[[keys.command]]
+key = "prefix+i"
+type = "pane"
+command = "hrdr-cheat"
+description = "cheat sheet"
+
+[[keys.command]]
+key = "prefix+t"
+type = "popup"
+command = "hrdr-todo"
+description = "todo buffer"
 
 [ui]
 sidebar_start_collapsed=true
