@@ -17,5 +17,8 @@ lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     # font-feature = +zero   # slashed zero
     # font-feature = +ss01   # stylistic sets, Lilex has ss01-ss05
     # font-feature = +cv01   # character variants, Lilex has cv01-cv15
+
+    # enable alt via options key
+    macos-option-as-alt = true
   '';
 }
