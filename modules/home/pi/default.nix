@@ -20,16 +20,6 @@ let
     defaultProvider = "commandcode";
     defaultModel = "deepseek/deepseek-v4.1-flash";
     defaultThinkingLevel = "max";
-    retry = {
-      enabled = true;
-      maxRetries = 3;
-      baseDelayMs = 2000;
-      provider = {
-        timeoutMs = 1800000;
-        maxRetries = 0;
-        maxRetryDelayMs = 60000;
-      };
-    };
   };
 
   coreutils = pkgs.coreutils;
@@ -40,11 +30,8 @@ in
 
   home.file.".pi/agent/settings.json".text = builtins.toJSON settings;
 
-  home.file.".pi/agent/extensions/commandcode-transient-403-retry.ts".source =
-    ./extensions/commandcode-transient-403-retry.ts;
-
-  home.file.".pi/agent/extensions/no-terminal-title.ts".source =
-    ./extensions/no-terminal-title.ts;
+  # home.file.".pi/agent/extensions/no-terminal-title.ts".source =
+  # ./extensions/no-terminal-title.ts;
 
   # copied, not symlinked: the extension rewrites this file
   home.activation.piGuardrails = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
