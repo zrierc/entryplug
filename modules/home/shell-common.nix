@@ -48,6 +48,9 @@ let
     if command -v orbctl >/dev/null; then
       source <(orbctl completion ${shell} 2>/dev/null) || true
     fi
+    if command -v herdr >/dev/null; then
+      source <(herdr completion ${shell} 2>/dev/null) || true
+    fi
   '';
 
   # interactive shells only: .bashrc also runs non-interactively

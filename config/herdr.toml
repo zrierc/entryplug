@@ -6,6 +6,8 @@ detach = "prefix+d"
 last_pane = "prefix+a"
 previous_tab = "alt+h"
 next_tab = "alt+l"
+goto = "prefix+s"
+settings = "prefix+g"
 
 [[keys.command]]
 key = "prefix+f"
@@ -28,3 +30,7 @@ description = "todo buffer"
 [ui]
 sidebar_start_collapsed=true
 tab_bar_position="bottom"
+
+[ui.toast]
+delivery = "terminal"
+delay_seconds = 1
