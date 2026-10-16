@@ -680,12 +680,23 @@ need `herdr` and `nvim`:
 
 | Key | Type | Script | What it does |
 | --- | --- | --- | --- |
-| `prefix+f` | popup | `hrdr-sessionizer` | fzf over `~/Dev`, then focus a herdr workspace whose label matches the path, or create one |
+| `prefix+f` | popup | `hrdr-sessionizer` | project picker, inside-herdr form: fzf over `~/Dev`, then focus a herdr workspace whose label matches the path, or create one |
 | `prefix+i` | pane | `hrdr-cheat` | fzf over the two lists in `config/cht-*`, `curl` cht.sh, pager |
 | `prefix+t` | popup | `hrdr-todo` | `TODO.md` in the pane's directory, else `~/Documents/notes/todo.md` |
 
 A fourth, `hrdr-windowizer <label> <command…>`, is not bound to a key: it creates or finds
 a labelled tab and runs the command in it, which is what scripts and hooks call.
+
+`hrdr-sessionizer` (also reached as `ts` and `hs`) behaves differently inside and
+outside herdr, because the unit of work differs. Inside a herdr pane or popup, the unit
+is a project directory: the bare command is the picker above, and
+`hrdr-sessionizer <dir-name>` resolves the directory relative to the pane's cwd and
+jumps straight to its workspace without a picker. Outside herdr, the unit is a session:
+the bare command lists the sessions from `herdr session list` with their running state
+and attaches to the pick, and `hrdr-sessionizer <name>` runs `herdr session attach
+<name>`, which creates and starts the session when it does not exist. A failing
+argument prints one error line and exits 1; the picker never appears once an argument
+was given.
 
 Two things about these are worth knowing. A workspace carries **no cwd**, so
 `hrdr-sessionizer` matches on the label, which is the project's path below `$HOME` — that

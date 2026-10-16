@@ -11,33 +11,86 @@ in
       name = "hrdr-sessionizer";
       runtimeInputs = [ pkgs.coreutils pkgs.fd pkgs.fzf pkgs.jq herdr ];
       text = ''
-        if ! workspaces=$(herdr workspace list 2>/dev/null); then
-          echo "hrdr-sessionizer: herdr's server is not running" >&2
+        if [ "$#" -gt 1 ]; then
+          echo "usage: hrdr-sessionizer [dir-name|session-name]" >&2
           exit 1
         fi
 
-        pick=$(
-          {
-            fd --type d --min-depth 1 --max-depth 3 \
-              --exclude .git --exclude node_modules --exclude .venv --exclude build-sources \
-              . "$HOME/Dev" 2>/dev/null || true
-            fd --type d --min-depth 1 --max-depth 1 . "$HOME" 2>/dev/null || true
-          } | sort -u | fzf --border --layout=reverse
-        ) || exit 0
-        [ -n "$pick" ] || exit 0
+        # HERDR_ENV is set in pane processes (popup and pane commands included),
+        # HERDR_SOCKET_PATH in every custom command herdr spawns; both mean a
+        # server is already known and the unit of work is a workspace. Outside
+        # both, the unit is a session and attach starts it.
+        if [ "''${HERDR_ENV:-}" = 1 ] || [ -n "''${HERDR_SOCKET_PATH:-}" ]; then
+          if ! workspaces=$(herdr workspace list 2>/dev/null); then
+            echo "hrdr-sessionizer: herdr's server is not running" >&2
+            exit 1
+          fi
 
-        # a workspace carries no cwd, so its label is the path below $HOME
-        label=$(printf '%s' "$pick" | sed "s|^$HOME/||")
+          if [ "$#" -eq 1 ]; then
+            pick=$(cd -- "$1" 2>/dev/null && pwd) || {
+              echo "hrdr-sessionizer: cannot cd to '$1'" >&2
+              exit 1
+            }
+          else
+            pick=$(
+              {
+                fd --type d --min-depth 1 --max-depth 3 \
+                  --exclude .git --exclude node_modules --exclude .venv --exclude build-sources \
+                  . "$HOME/Dev" 2>/dev/null || true
+                fd --type d --min-depth 1 --max-depth 1 . "$HOME" 2>/dev/null || true
+              } | sort -u | fzf --border --layout=reverse
+            ) || exit 0
+            [ -n "$pick" ] || exit 0
+          fi
 
-        id=$(printf '%s' "$workspaces" \
-          | jq -r --arg l "$label" \
-              '.result.workspaces[] | select(.label == $l) | .workspace_id' | head -1)
+          # a workspace carries no cwd, so its label is the path below $HOME
+          label=''${pick#"$HOME"/}
 
-        if [ -n "$id" ]; then
-          herdr workspace focus "$id"
-        else
-          herdr workspace create --cwd "$pick" --label "$label" --focus
+          id=$(printf '%s' "$workspaces" \
+            | jq -r --arg l "$label" \
+                '.result.workspaces[] | select(.label == $l) | .workspace_id' | head -1)
+
+          if [ -n "$id" ]; then
+            herdr workspace focus "$id"
+          else
+            herdr workspace create --cwd "$pick" --label "$label" --focus
+          fi
+          exit 0
         fi
+
+        # outside herdr a session is the unit; attach starts one that is stopped or missing
+        if [ "$#" -eq 1 ]; then
+          # herdr's validate_name rules plus no leading dash:
+          # session attach takes the name positionally and has no `--`, so a dash
+          # name could never attach. Refusing here keeps every argument failure
+          # one line and exit 1.
+          ok=1
+          case $1 in
+            . | .. | -* | *[!A-Za-z0-9._-]*) ok=0 ;;
+            *) [ "''${#1}" -le 64 ] || ok=0 ;;
+          esac
+          if [ -z "$1" ] || [ "$ok" = 0 ]; then
+            echo "hrdr-sessionizer: invalid session name: '$1'" >&2
+            exit 1
+          fi
+          exec herdr session attach "$1"
+        fi
+
+        if ! sessions=$(herdr session list --json); then
+          echo "hrdr-sessionizer: cannot list sessions" >&2
+          exit 1
+        fi
+
+        # only a stopped session is marked; the name stays the row and attaching
+        # starts a stopped one anyway
+        sel=$(
+          printf '%s' "$sessions" \
+            | jq -r '.sessions[] | if .running then .name else "\(.name) " end' \
+            | fzf --border --layout=reverse --height=~20
+        ) || exit 0
+        [ -n "$sel" ] || exit 0
+
+        exec herdr session attach "''${sel%% *}"
       '';
     })
 
