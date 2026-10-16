@@ -12,5 +12,6 @@
     firefox-bin
     ghostty-bin
     mpv
+    ffmpeg
   ]);
 }

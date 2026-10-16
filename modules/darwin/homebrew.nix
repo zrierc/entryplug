@@ -36,6 +36,8 @@
       "helium-browser"
       "vesktop"
       "vlc"
+      "audacity"
+      "nikitabobko/tap/aerospace"
     ];
   };
 

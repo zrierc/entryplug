@@ -7,6 +7,7 @@
   # and `stat -f` do not exist in GNU
   home.packages =
     (with pkgs; [
+      cloudflared
       curl
       htop
       kubectl
