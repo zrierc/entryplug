@@ -8,7 +8,7 @@
   ];
 
   environment.systemPackages = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (with pkgs; [
-    bitwarden-desktop
+    postman
     firefox-bin
     ghostty-bin
     mpv
