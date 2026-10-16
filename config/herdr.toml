@@ -4,8 +4,9 @@ onboarding = false
 prefix = "ctrl+a"
 detach = "prefix+d"
 last_pane = "prefix+a"
-previous_tab = "alt+h"
-next_tab = "alt+l"
+# cmd+… not alt+…: alt+h/l are AeroSpace's global focus chords
+previous_tab = "cmd+h"
+next_tab = "cmd+l"
 goto = "prefix+s"
 settings = "prefix+g"
 
