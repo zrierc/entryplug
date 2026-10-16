@@ -665,7 +665,8 @@ anything installed by hand outside this repo.
 
 `config/herdr.toml` sets the prefix to `ctrl+a` (the same as tmux, so nesting works
 through herdr's own double-press passthrough), adds `last_pane` on `prefix+a`, and moves
-tab switching to `alt+h` / `alt+l`. Everything else is herdr's default, deliberately:
+tab switching to `cmd+h` / `cmd+l` — `alt+h`/`alt+l` would be eaten by AeroSpace's
+global focus chords. Everything else is herdr's default, deliberately:
 its `prefix+h/j/k/l`, `prefix+v`, `prefix+minus`, `prefix+z` and `prefix+[` already match
 what tmux was configured to do.
 
@@ -725,3 +726,35 @@ forces `ts` (and adds `hs`) over to `hrdr-sessionizer`, which is why the alias i
 Both multiplexers share the `C-a` prefix on purpose. Nested, one eats the first press and
 a double press reaches the inner one; the cost is that herdr cannot detect an agent
 running behind tmux, so use tmux for plain shells and herdr for agents.
+
+## AeroSpace
+
+AeroSpace is the window manager (cask `nikitabobko/tap/aerospace`, declared in
+`modules/darwin/homebrew.nix`). `config/aerospace.toml` is linked to
+`~/.config/aerospace/aerospace.toml` read-only — the same rule as herdr's config: edit
+the repo file and switch. `auto-reload-config` is on, so a switch should apply new keys
+without a restart; `alt+shift+c` is the reliable reload when it does not.
+
+The keymap is unit-00's i3 config with `alt` (Option) as the mod key: workspaces
+`alt+1..0`, focus `alt+h/j/k/l`, move `alt+shift+h/j/k/l`, splits `alt+z`/`alt+v`,
+layouts `alt+s/w/e`, floating `alt+shift+space`, resize mode on `alt+r`, close on
+`alt-q`, workspace cycling on `alt+tab`, `alt+m`/`alt+shift+m` move focus and the current
+workspace across monitors, and `alt+Return` opens Ghostty. There is no workspace-to-monitor
+pinning: workspaces appear on the focused monitor. i3's arrow-key
+duplicates are deliberately unbound so `Option+Left/Right` keeps its word-motion meaning
+in Ghostty and nvim. External-app shortcuts (screenshot, powermenu, rofi launcher) are
+not ported, and the macOS `cmd+Return` terminal shortcut is untouched.
+
+Three costs are worth knowing. The `alt` grabs are global, so macOS Option characters
+(`Option+e`, `Option+q`, `Option+s`, …) no longer type. herdr's tab switching moved from
+`alt+h`/`alt+l` to `cmd+h`/`cmd+l`, because AeroSpace owns the `alt` chords now
+(`config/herdr.toml`). macOS reserves `cmd+h` as Hide Application, and herdr's client is
+a TUI inside Ghostty — these two chords only reach it because the key remap in place
+forwards them to the terminal. If that ever regresses, `cmd+h` hides the window and the
+fallback chord is `ctrl+alt+h/l`.
+
+First launch needs the Accessibility permission (System Settings → Privacy & Security).
+The CLI lives at `/opt/homebrew/bin/aerospace` (off PATH by the brew policy — call it by
+path) and only accepts subcommands while the app runs; the config gate is
+`aerospace reload-config --dry-run --warnings-as-errors`. Windows AeroSpace misreads as
+dialogs open floating; `alt+shift+space` tiles them again.
