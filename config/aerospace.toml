@@ -7,6 +7,8 @@ config-version = 2
 auto-reload-config = true
 start-at-login = true
 
+# auto-clean trees; chosen over i3's split keys, which AeroSpace's parser
+# rejects alongside flatten normalization
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
 
@@ -18,12 +20,12 @@ on-focused-monitor-changed = []
 # i3: focus_follows_mouse no
 focus-follows-mouse.enabled = false
 
-gaps.inner.horizontal = 3
-gaps.inner.vertical = 3
-gaps.outer.left = 1
-gaps.outer.right = 1
-gaps.outer.top = 1
-gaps.outer.bottom = 1
+gaps.inner.horizontal = 5
+gaps.inner.vertical = 5
+gaps.outer.left = 3
+gaps.outer.right = 3
+gaps.outer.top = 3
+gaps.outer.bottom = 3
 
 [mode.main.binding]
 alt-enter = "exec-and-forget open -na '/Applications/Nix Apps/Ghostty.app'"
@@ -38,9 +40,6 @@ alt-shift-h = 'move left'
 alt-shift-j = 'move down'
 alt-shift-k = 'move up'
 alt-shift-l = 'move right'
-
-alt-z = 'split horizontal'
-alt-v = 'split vertical'
 
 alt-f = 'fullscreen'
 

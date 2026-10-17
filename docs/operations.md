@@ -740,11 +740,12 @@ the repo file and switch. `auto-reload-config` is on, so a switch should apply n
 without a restart; `alt+shift+c` is the reliable reload when it does not.
 
 The keymap is unit-00's i3 config with `alt` (Option) as the mod key: workspaces
-`alt+1..0`, focus `alt+h/j/k/l`, move `alt+shift+h/j/k/l`, splits `alt+z`/`alt+v`,
-layouts `alt+s/w/e`, floating `alt+shift+space`, resize mode on `alt+r`, close on
+`alt+1..0`, focus `alt+h/j/k/l`, move `alt+shift+h/j/k/l`, layouts `alt+s/w/e`, floating `alt+shift+space`, resize mode on `alt+r`, close on
 `alt-q`, workspace cycling on `alt+tab`, `alt+m`/`alt+shift+m` move focus and the current
 workspace across monitors, and `alt+Return` opens Ghostty. There is no workspace-to-monitor
-pinning: workspaces appear on the focused monitor. i3's arrow-key
+pinning: workspaces appear on the focused monitor. There is no `split` either: AeroSpace's
+parser rejects it alongside the enabled tree normalizations, so window direction is set
+with the `alt+e` layout toggle instead. Windows move and resize the same regardless. i3's arrow-key
 duplicates are deliberately unbound so `Option+Left/Right` keeps its word-motion meaning
 in Ghostty and nvim. External-app shortcuts (screenshot, powermenu, rofi launcher) are
 not ported, and the macOS `cmd+Return` terminal shortcut is untouched.
