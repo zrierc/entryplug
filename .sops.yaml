@@ -7,12 +7,17 @@ creation_rules:
       - age:
           - *entryplug
 
-  - path_regex: '(^|/)\.env(\..+)?$'
+  - path_regex: '(^|/)(\.env(\..+)?|[^/]*\.env)$'
     key_groups:
       - age:
           - *entryplug
 
   - path_regex: '(^|/)([^/]*[._-])?\.?secrets?([._-][^/]*)?$'
+    key_groups:
+      - age:
+          - *entryplug
+
+  - path_regex: '(^|/)[^/]*\.(md|txt|norg|ya?ml|jsonc?)$'
     key_groups:
       - age:
           - *entryplug

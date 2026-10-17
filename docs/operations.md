@@ -255,7 +255,11 @@ them and fail without a darwin builder.
 ### Secrets
 
 `secrets/secret.yaml` is sops-encrypted to the age recipient in `.sops.yaml`
-and holds the git identities plus the provider API keys.
+and holds the git identities plus the provider API keys. The creation rules match at
+any depth: everything under `secrets/`, the `.env` family (`.env`, `.env.*`, `*.env`),
+the `secret`/`secrets` name family (`secret`, `.secret`, `api.secret`, `config.secrets`,
+…), and files ending in `.md`, `.txt`, `.norg`, `.yaml`, `.yml`, `.json`, `.jsonc`. The
+rules only pick the key when a file is sops-encrypted; nothing encrypts automatically.
 
 The private half lives at `~/.config/sops/age/keys.txt`. It is not in the repo,
 so every new machine needs it restored by hand from the secret manager.
