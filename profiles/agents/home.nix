@@ -14,13 +14,11 @@
     bun
     nodejs_26
 
-    awscli2
     bitwarden-cli
     btop
     lazygit
     neovim
     ripgrep-all
-    terraform
     tldr
   ];
 
