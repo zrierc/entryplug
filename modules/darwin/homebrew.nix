@@ -38,6 +38,7 @@
       "vlc"
       "audacity"
       "nikitabobko/tap/aerospace"
+      "libreoffice"
     ];
   };
 
