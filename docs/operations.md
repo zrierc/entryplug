@@ -746,17 +746,23 @@ the repo file and switch. `auto-reload-config` is on, so a switch should apply n
 without a restart; `alt+shift+c` is the reliable reload when it does not.
 
 The keymap is unit-00's i3 config with `alt` (Option) as the mod key: workspaces
-`alt+1..0` (plain workspace switching: focus follows the workspace to the display it lives
-on, nothing moves), focus `alt+h/j/k/l` (inside the workspace, then the adjacent display,
-then wrapping in the workspace — i3's own order), move `alt+shift+h/j/k/l` (inside the
-workspace, and onto the adjacent monitor at the workspace edge, like i3's directional
-move), layouts `alt+s/w/e`, floating `alt+shift+space`, resize mode on `alt+r`, close on
+`alt+1..0` (an existing workspace keeps its display, a never-used number opens on the
+display you are on — `aero-workspace`, below), focus `alt+h/j/k/l` (inside the workspace,
+then the adjacent display, then wrapping in the workspace — i3's own order), move
+`alt+shift+h/j/k/l` (inside the workspace, and onto the adjacent monitor at the workspace
+edge, like i3's directional move), layouts `alt+s/w/e`, floating `alt+shift+space`, resize mode on `alt+r`, close on
 `alt-q`, workspace cycling on `alt+tab`, `alt+m`/`alt+shift+m` move focus and the current
 workspace across monitors, and `alt+Return` opens Ghostty. There is no workspace-to-monitor
 pinning. There is no `split` either: AeroSpace's parser rejects it alongside the enabled
 tree normalizations, so window direction is set with the `alt+e` layout toggle instead.
-Windows move and resize the same regardless. An empty workspace still opens on the main
-display rather than the focused one — AeroSpace's one documented difference from i3. i3's arrow-key
+Windows move and resize the same regardless.
+
+`aero-workspace` is the helper behind `alt+1..0`, in `modules/home/aerospace.nix` and linked
+to `~/.local/bin`: it switches when the workspace exists and summons a never-used one onto
+the focused display, which is i3's rule — AeroSpace on its own would create every new
+workspace on the main display. Bindings call it by path because AeroSpace spawns them with
+`PATH=/usr/bin:/bin:/usr/sbin:/sbin`; the same reason the `move` bindings call
+`/opt/homebrew/bin/aerospace` directly. i3's arrow-key
 duplicates are deliberately unbound so `Option+Left/Right` keeps its word-motion meaning
 in Ghostty and nvim. External-app shortcuts (screenshot, powermenu, rofi launcher) are
 not ported, and the macOS `cmd+Return` terminal shortcut is untouched.

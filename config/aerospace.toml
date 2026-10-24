@@ -57,19 +57,19 @@ alt-shift-space = 'layout floating tiling'
 alt-r = 'mode resize'
 alt-shift-c = 'reload-config'
 
-# plain workspace: focus follows the workspace to the monitor it lives on, so
-# switching never drags windows across displays. An empty workspace still opens
-# on the main monitor, which is AeroSpace's one documented difference from i3.
-alt-1 = 'workspace --auto-back-and-forth 1'
-alt-2 = 'workspace --auto-back-and-forth 2'
-alt-3 = 'workspace --auto-back-and-forth 3'
-alt-4 = 'workspace --auto-back-and-forth 4'
-alt-5 = 'workspace --auto-back-and-forth 5'
-alt-6 = 'workspace --auto-back-and-forth 6'
-alt-7 = 'workspace --auto-back-and-forth 7'
-alt-8 = 'workspace --auto-back-and-forth 8'
-alt-9 = 'workspace --auto-back-and-forth 9'
-alt-0 = 'workspace --auto-back-and-forth 10'
+# i3 workspace semantics: an existing workspace keeps its display, a brand-new
+# one opens on the display you are on. The helper is called by path because
+# bindings run with PATH=/usr/bin:/bin:/usr/sbin:/sbin.
+alt-1 = 'exec-and-forget "$HOME/.local/bin/aero-workspace" 1'
+alt-2 = 'exec-and-forget "$HOME/.local/bin/aero-workspace" 2'
+alt-3 = 'exec-and-forget "$HOME/.local/bin/aero-workspace" 3'
+alt-4 = 'exec-and-forget "$HOME/.local/bin/aero-workspace" 4'
+alt-5 = 'exec-and-forget "$HOME/.local/bin/aero-workspace" 5'
+alt-6 = 'exec-and-forget "$HOME/.local/bin/aero-workspace" 6'
+alt-7 = 'exec-and-forget "$HOME/.local/bin/aero-workspace" 7'
+alt-8 = 'exec-and-forget "$HOME/.local/bin/aero-workspace" 8'
+alt-9 = 'exec-and-forget "$HOME/.local/bin/aero-workspace" 9'
+alt-0 = 'exec-and-forget "$HOME/.local/bin/aero-workspace" 10'
 
 alt-shift-1 = 'move-node-to-workspace 1'
 alt-shift-2 = 'move-node-to-workspace 2'
