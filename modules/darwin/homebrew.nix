@@ -38,7 +38,9 @@
       "vlc"
       "audacity"
       "nikitabobko/tap/aerospace"
-      "libreoffice"
+      "microsoft-word"
+      "microsoft-excel"
+      "microsoft-powerpoint"
     ];
   };
 
