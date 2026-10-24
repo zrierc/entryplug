@@ -31,10 +31,12 @@ gaps.outer.bottom = 3
 alt-enter = "exec-and-forget open -na '/Applications/Nix Apps/Ghostty.app'"
 alt-q = 'close'
 
-alt-h = 'focus --wrap-around left'
-alt-j = 'focus --wrap-around down'
-alt-k = 'focus --wrap-around up'
-alt-l = 'focus --wrap-around right'
+# i3's focus order: the next window in the direction, else the adjacent
+# monitor's visible workspace, else wrap inside the workspace
+alt-h = 'focus --boundaries all-monitors-outer-frame --boundaries-action wrap-around-the-workspace left'
+alt-j = 'focus --boundaries all-monitors-outer-frame --boundaries-action wrap-around-the-workspace down'
+alt-k = 'focus --boundaries all-monitors-outer-frame --boundaries-action wrap-around-the-workspace up'
+alt-l = 'focus --boundaries all-monitors-outer-frame --boundaries-action wrap-around-the-workspace right'
 
 # i3 move semantics: move inside the tree, and at the workspace edge hand the
 # window to the adjacent monitor (i3's move_to_output_directed). The absolute
@@ -55,19 +57,19 @@ alt-shift-space = 'layout floating tiling'
 alt-r = 'mode resize'
 alt-shift-c = 'reload-config'
 
-# summon, not plain workspace: the workspace comes to the focused monitor, so
-# every workspace is reachable on either display. Force-assignment would block
-# this command, which is why there is no workspace-to-monitor mapping.
-alt-1 = 'summon-workspace 1'
-alt-2 = 'summon-workspace 2'
-alt-3 = 'summon-workspace 3'
-alt-4 = 'summon-workspace 4'
-alt-5 = 'summon-workspace 5'
-alt-6 = 'summon-workspace 6'
-alt-7 = 'summon-workspace 7'
-alt-8 = 'summon-workspace 8'
-alt-9 = 'summon-workspace 9'
-alt-0 = 'summon-workspace 10'
+# plain workspace: focus follows the workspace to the monitor it lives on, so
+# switching never drags windows across displays. An empty workspace still opens
+# on the main monitor, which is AeroSpace's one documented difference from i3.
+alt-1 = 'workspace --auto-back-and-forth 1'
+alt-2 = 'workspace --auto-back-and-forth 2'
+alt-3 = 'workspace --auto-back-and-forth 3'
+alt-4 = 'workspace --auto-back-and-forth 4'
+alt-5 = 'workspace --auto-back-and-forth 5'
+alt-6 = 'workspace --auto-back-and-forth 6'
+alt-7 = 'workspace --auto-back-and-forth 7'
+alt-8 = 'workspace --auto-back-and-forth 8'
+alt-9 = 'workspace --auto-back-and-forth 9'
+alt-0 = 'workspace --auto-back-and-forth 10'
 
 alt-shift-1 = 'move-node-to-workspace 1'
 alt-shift-2 = 'move-node-to-workspace 2'
