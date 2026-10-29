@@ -20,6 +20,10 @@
       {
         "kind": "directory",
         "path": "/tmp"
+      },
+      {
+        "kind": "directory",
+        "path": "~/.pi/agent/"
       }
     ]
   }
