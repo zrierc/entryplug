@@ -16,6 +16,7 @@
 
     bitwarden-cli
     btop
+    gh
     lazygit
     neovim
     ripgrep-all
@@ -33,7 +34,7 @@
 
   programs.vim.defaultEditor = false;
 
-  # load from dedicated config file because it'll be too long
+  # load from dedicated config file
   programs.starship = {
     enable = true;
     settings = builtins.fromTOML (builtins.readFile ../../config/starship.toml);
