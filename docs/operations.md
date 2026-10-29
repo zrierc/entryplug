@@ -327,6 +327,41 @@ Rotation: revoke the old public key at the host, replace the private key in the
 secret manager, copy the new file to `~/.ssh/key`. Nothing in the repo changes,
 because the repo never held the key.
 
+### GitHub CLI
+
+`gh` gets the same directory treatment as git, through a wrapper that
+`modules/home/gh.nix` puts on PATH. Inside `~/Dev` the directory picks a git
+identity, the wrapper reads `user.name` from the identity file that activation
+wrote from the secret manager, and asks gh for that account's token, exported
+as `GH_TOKEN` for the one command. The table above maps each directory to a git
+identity, so every directory runs gh as the same account it commits as, with no
+username stored in the repo. Outside `~/Dev` the wrapper sets nothing and gh
+uses its active account. `gh auth` subcommands always skip the wrapper, so they
+see gh's own config. Because the login is read from `git.<id>.name`, that secret
+value has to be the GitHub username; if it is not, gh warns and falls back to
+the active account.
+
+Auth is not in the secret manager. `gh auth login` stores an OAuth token in the
+macOS keychain and refreshes it; nothing expires silently and no token file is
+written. Log in once per account, from `~` — from a directory under `~/Dev` the
+wrapper may inject a token and confuse the login flow:
+
+```sh
+cd ~
+gh auth login --hostname github.com --git-protocol ssh --web --skip-ssh-key -s project
+```
+
+`-s project` is only for Projects v2; the default scopes already cover repos,
+orgs and gists. Adding it later: `gh auth refresh -s project`.
+
+`~/.config/gh/config.yml` is managed and read-only (`git_protocol = ssh`).
+`hosts.yml` is not managed, because `gh auth login` writes it; do not add
+`programs.gh.hosts` later, that would freeze the file as a store symlink.
+`gh auth switch` only affects commands outside `~/Dev`, so it is not needed for
+daily work. `gh auth status` reports the active account, which can differ from
+the account the wrapper uses; `gh api user -q .login` in the directory prints
+the account actually in use. Workflow commands: [github.md](github.md).
+
 ## Keyboard
 
 Caps Lock is the escape key when tapped and control when held, and the escape

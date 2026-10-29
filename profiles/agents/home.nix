@@ -4,6 +4,7 @@
   imports = [
     ../headless/home.nix
     ../../modules/home/tools.nix
+    ../../modules/home/gh.nix
     ../../modules/home/scripts/hrdr.nix
     ../../modules/home/pi
     ../../modules/home/herdr.nix
@@ -16,7 +17,6 @@
 
     bitwarden-cli
     btop
-    gh
     lazygit
     neovim
     ripgrep-all
