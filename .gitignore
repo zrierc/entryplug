@@ -34,5 +34,6 @@
 !secrets/
 !secrets/**
 !.sops.yaml
+!modules/home/scripts/*.py
 !modules/home/pi/extensions/**
 !modules/home/pi/guardrails.json

@@ -6,6 +6,7 @@
     ../../modules/home/ghostty.nix
     ../../modules/home/karabiner.nix
     ../../modules/home/aerospace.nix
+    ../../modules/home/steam-presence.nix
   ];
 
   # needs a video player, so workstation not agents
