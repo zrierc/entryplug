@@ -18,7 +18,7 @@ persistent-workspaces = []
 on-focused-monitor-changed = []
 
 # i3: focus_follows_mouse no
-focus-follows-mouse.enabled = false
+focus-follows-mouse.enabled = true
 
 gaps.inner.horizontal = 5
 gaps.inner.vertical = 5
