@@ -41,7 +41,6 @@
       "microsoft-word"
       "microsoft-excel"
       "microsoft-powerpoint"
-      "zotero"
     ];
   };
 
