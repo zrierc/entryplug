@@ -10,6 +10,7 @@ Discord, which resolves the game name from the app id.
 import json
 import os
 import re
+import signal
 import socket
 import struct
 import time
@@ -159,8 +160,9 @@ class RPC:
         try:
             if self.sock:
                 self._activity(None)
-        except OSError:
-            pass
+                log("status cleared")
+        except OSError as error:
+            log("status not cleared:", error)
         self.close()
 
     def clear_stale(self):
@@ -220,6 +222,14 @@ def main():
     rpc.clear_stale()
     current = None  # (steam app id, discord app id, started ms)
     sent_at = 0.0
+
+    def stop(*_):
+        # launchd stops the agent on logout or a rebuild; do not leave a status behind
+        rpc.hide()
+        raise SystemExit(0)
+
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
 
     for line in events():
         if line is not None:
