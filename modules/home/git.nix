@@ -1,4 +1,10 @@
-{ config, lib, pkgs, devRoot, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  devRoot,
+  ...
+}:
 
 let
   keyDir = "${config.home.homeDirectory}/.ssh/key";
@@ -7,12 +13,30 @@ let
 
   # one account, one key
   dirs = {
-    works = { id = "work"; key = "github_primary"; };
-    college = { id = "college"; key = "github_college"; };
-    personal = { id = "personal"; key = "github_primary"; };
-    projects = { id = "personal"; key = "github_primary"; };
-    learn = { id = "personal"; key = "github_primary"; };
-    sandbox = { id = "personal"; key = "github_primary"; };
+    works = {
+      id = "work";
+      key = "github_primary";
+    };
+    college = {
+      id = "college";
+      key = "github_college";
+    };
+    personal = {
+      id = "personal";
+      key = "github_primary";
+    };
+    projects = {
+      id = "personal";
+      key = "github_primary";
+    };
+    learn = {
+      id = "personal";
+      key = "github_primary";
+    };
+    sandbox = {
+      id = "personal";
+      key = "github_primary";
+    };
   };
 
   keyNames = lib.unique (map (entry: entry.key) (lib.attrValues dirs));

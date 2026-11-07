@@ -22,7 +22,12 @@ in
   home.packages = [
     (pkgs.writeShellApplication {
       name = "tmux-sessionizer";
-      runtimeInputs = [ pkgs.coreutils pkgs.fd pkgs.fzf pkgs.tmux ];
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.fd
+        pkgs.fzf
+        pkgs.tmux
+      ];
       text = ''
         ${picker}
         session=$(basename "$pick" | tr . _)
@@ -45,7 +50,10 @@ in
 
     (pkgs.writeShellApplication {
       name = "tmux-windowizer";
-      runtimeInputs = [ pkgs.coreutils pkgs.tmux ];
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.tmux
+      ];
       text = ''
         if [ $# -lt 2 ]; then
           echo "usage: tmux-windowizer <label> <command...>" >&2
@@ -66,7 +74,14 @@ in
 
     (pkgs.writeShellApplication {
       name = "tmux-cht.sh";
-      runtimeInputs = [ pkgs.coreutils pkgs.curl pkgs.fzf pkgs.gnugrep pkgs.less pkgs.tmux ];
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.curl
+        pkgs.fzf
+        pkgs.gnugrep
+        pkgs.less
+        pkgs.tmux
+      ];
       text = ''
         topics=${../../../config/cht-languages}
         commands=${../../../config/cht-commands}

@@ -1,4 +1,13 @@
-{ config, lib, pkgs, inputs, host, profile, homeModule, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  host,
+  profile,
+  homeModule,
+  ...
+}:
 
 {
   imports = [ ./defaults.nix ];
@@ -21,7 +30,10 @@
 
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
 
       min-free = "40G";
       max-free = "100G";
@@ -29,13 +41,25 @@
 
     gc = {
       automatic = true;
-      interval = [ { Weekday = 7; Hour = 3; Minute = 15; } ];
+      interval = [
+        {
+          Weekday = 7;
+          Hour = 3;
+          Minute = 15;
+        }
+      ];
       options = "--delete-older-than 15d";
     };
 
     optimise = {
       automatic = true;
-      interval = [ { Weekday = 7; Hour = 4; Minute = 45; } ];
+      interval = [
+        {
+          Weekday = 7;
+          Hour = 4;
+          Minute = 45;
+        }
+      ];
     };
   };
 
@@ -43,7 +67,10 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "hm-backup";
-    extraSpecialArgs = { inherit inputs host; devRoot = host.devRoot; };
+    extraSpecialArgs = {
+      inherit inputs host;
+      devRoot = host.devRoot;
+    };
     users.${host.primaryUser} = {
       imports = [
         ../home/base.nix

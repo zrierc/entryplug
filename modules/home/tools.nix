@@ -37,11 +37,21 @@ in
     enable = true;
 
     # `.*` is a real ignore rule, so it hides dotfiles even from --hidden
-    ignores = [ ".*" "node_modules" "venv" "!.config" "!.local" ];
+    ignores = [
+      ".*"
+      "node_modules"
+      "venv"
+      "!.config"
+      "!.local"
+    ];
   };
 
-  programs.zsh.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (ezaAliases // agentsAliases);
-  programs.bash.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (ezaAliases // agentsAliases);
+  programs.zsh.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (
+    ezaAliases // agentsAliases
+  );
+  programs.bash.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isLinux (
+    ezaAliases // agentsAliases
+  );
 
   # INFO: currently disabled
   # ^z opens the project picker.

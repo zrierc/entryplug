@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
   programs.zsh = {
@@ -19,7 +24,7 @@ lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
       findNoDups = true;
     };
 
-    # hist_verify is superseded by magic-space below, and flowcontrol is already 
+    # hist_verify is superseded by magic-space below, and flowcontrol is already
     # off in a stock zsh -- based on oh-my-zsh
     setOptions = [
       "AUTO_CD"

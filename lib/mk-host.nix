@@ -1,4 +1,8 @@
-{ inputs, host, profile }:
+{
+  inputs,
+  host,
+  profile,
+}:
 
 inputs.nix-darwin.lib.darwinSystem {
   specialArgs = {

@@ -1,10 +1,11 @@
-{ lib
-, pkgs
-, self
-, username
-, profile
-, darwinRebuild
-, homeManager
+{
+  lib,
+  pkgs,
+  self,
+  username,
+  profile,
+  darwinRebuild,
+  homeManager,
 }:
 
 let

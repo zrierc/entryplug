@@ -1,4 +1,9 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 {
   home.packages = with pkgs; [
@@ -6,8 +11,7 @@
     age
   ];
 
-  home.sessionVariables.SOPS_AGE_KEY_FILE =
-    "${config.home.homeDirectory}/.config/sops/age/keys.txt";
+  home.sessionVariables.SOPS_AGE_KEY_FILE = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
   home.activation.ensureAgeKey = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     ageKey="$HOME/.config/sops/age/keys.txt"

@@ -9,7 +9,13 @@ in
   home.packages = [
     (pkgs.writeShellApplication {
       name = "hrdr-sessionizer";
-      runtimeInputs = [ pkgs.coreutils pkgs.fd pkgs.fzf pkgs.jq herdr ];
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.fd
+        pkgs.fzf
+        pkgs.jq
+        herdr
+      ];
       text = ''
         if [ "$#" -gt 1 ]; then
           echo "usage: hrdr-sessionizer [dir-name|session-name]" >&2
@@ -96,7 +102,13 @@ in
 
     (pkgs.writeShellApplication {
       name = "hrdr-cheat";
-      runtimeInputs = [ pkgs.coreutils pkgs.curl pkgs.fzf pkgs.gnugrep pkgs.less ];
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.curl
+        pkgs.fzf
+        pkgs.gnugrep
+        pkgs.less
+      ];
       text = ''
         topics=${../../../config/cht-languages}
         commands=${../../../config/cht-commands}
@@ -122,7 +134,10 @@ in
 
     (pkgs.writeShellApplication {
       name = "hrdr-todo";
-      runtimeInputs = [ pkgs.coreutils pkgs.neovim ];
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.neovim
+      ];
       text = ''
         dir=''${HERDR_ACTIVE_PANE_CWD:-$PWD}
 
@@ -139,7 +154,11 @@ in
 
     (pkgs.writeShellApplication {
       name = "hrdr-windowizer";
-      runtimeInputs = [ pkgs.coreutils pkgs.jq herdr ];
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.jq
+        herdr
+      ];
       text = ''
         if [ $# -lt 2 ]; then
           echo "usage: hrdr-windowizer <label> <command...>" >&2

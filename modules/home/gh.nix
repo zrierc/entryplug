@@ -1,7 +1,13 @@
 # gh has no includeIf, so a wrapper picks the account from $PWD and exports
 # GH_TOKEN for that one process. Auth itself stays with `gh auth login`, which
 # stores and refreshes the token in the keychain.
-{ config, lib, pkgs, devRoot, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  devRoot,
+  ...
+}:
 
 let
   home = config.home.homeDirectory;
@@ -24,7 +30,7 @@ let
   # trailing slash plus the /* glob mirrors git's gitdir: includes: subdirectories
   # and submodules match, devRoot/works-old does not
   caseArms = lib.concatStringsSep "\n" (
-    lib.mapAttrsToList (dir: id: ''      "${devRootAbs}/${dir}"/*) id=${lib.escapeShellArg id} ;;'') dirs
+    lib.mapAttrsToList (dir: id: ''"${devRootAbs}/${dir}"/*) id=${lib.escapeShellArg id} ;;'') dirs
   );
 in
 {

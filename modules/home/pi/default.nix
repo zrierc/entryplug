@@ -1,4 +1,9 @@
-{ pkgs, lib, inputs, ... }:
+{
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 
 let
   pi = inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.pi;
