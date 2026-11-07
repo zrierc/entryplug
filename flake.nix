@@ -172,5 +172,25 @@
         in
         lib.genAttrs profiles (profile: mkAppProgram system profile)
       );
+
+      devShells = lib.genAttrs allSystems (
+        system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+        in
+        {
+          default = pkgs.mkShell {
+            packages = with pkgs; [
+              nixfmt
+              statix
+              deadnix
+              nil
+              sops
+              age
+              jq
+            ];
+          };
+        }
+      );
     };
 }

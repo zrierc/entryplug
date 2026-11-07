@@ -81,6 +81,14 @@ darwin-rebuild switch --flake .#unit-05-headless
 
 Rollback: `darwin-rebuild --list-generations`, then `darwin-rebuild --rollback`.
 
+## Repo development
+
+```sh
+nix develop
+```
+
+Provides `nixfmt`, `statix`, `deadnix`, `nil`, `sops`, `age`, and `jq`.
+
 ## Docs
 
 - [Operations](docs/operations.md) — Homebrew policy, storage, editing, secrets.
