@@ -1,6 +1,8 @@
 { config, lib, pkgs, inputs, host, profile, homeModule, ... }:
 
 {
+  imports = [ ./defaults.nix ];
+
   nixpkgs.config.allowUnfree = true;
 
   system.stateVersion = 7;

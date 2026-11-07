@@ -12,5 +12,6 @@
     ../../modules/home/tmux.nix
     ../../modules/home/scripts/tmux.nix
     ../../modules/home/secrets.nix
+    ../../modules/home/macos-menubar.nix
   ];
 }

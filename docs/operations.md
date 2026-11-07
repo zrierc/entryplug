@@ -369,6 +369,33 @@ daily work. `gh auth status` reports the active account, which can differ from
 the account the wrapper uses; `gh api user -q .login` in the directory prints
 the account actually in use. Workflow commands: [github.md](github.md).
 
+## macOS defaults
+
+`modules/darwin/defaults.nix` is imported by `modules/darwin/core.nix`, so every
+Darwin profile gets the same system defaults. Every value mirrors the live Mac;
+keys whose current value is unset stay unmanaged until the GUI confirms them.
+Managed: Dock behaviour and size, Finder path/status bar and list view, desktop
+item visibility, dark appearance, scrollbar jump, tap to click, three-finger
+drag, screenshot location, and tiled-window margins.
+
+Deliberately unmanaged: Finder `AppleShowAllExtensions`, Finder
+`NewWindowTarget`, screensaver password timing, power sleep values, keyboard
+brightness, Finder tags/sidebar, and privacy or Siri settings. They are either
+unset today, need a battery/AC split, or are GUI-only/TCC-managed.
+
+Touch ID for sudo is enabled through
+`security.pam.services.sudo_local.touchIdAuth`. It writes
+`/etc/pam.d/sudo_local` with `pam_tid.so`; `/etc/pam.d/sudo` already includes
+that file. Password auth stays as the fallback, so SSH, cancelled prompts and
+unavailable hardware do not lock you out. Add `reattach = true` only if sudo
+inside tmux/screen cannot show the Touch ID prompt.
+
+Menu bar keys span two domains. `modules/home/macos-menubar.nix` uses
+`targets.darwin.defaults` for the normal control-center keys and
+`targets.darwin.currentHostDefaults` for the ByHost keys. The menu bar
+background and Liquid Glass keys are undocumented Apple defaults; verify them
+after a macOS update.
+
 ## Keyboard
 
 Caps Lock is the escape key when tapped and control when held, and the escape
