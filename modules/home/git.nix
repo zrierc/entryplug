@@ -1,7 +1,6 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, devRoot, ... }:
 
 let
-  devRoot = "~/Dev";
   keyDir = "${config.home.homeDirectory}/.ssh/key";
   secretFile = ../../secrets/secret.yaml;
   identityFile = id: "~/.config/git/identities/${id}.inc";
@@ -13,6 +12,7 @@ let
     personal = { id = "personal"; key = "github_primary"; };
     projects = { id = "personal"; key = "github_primary"; };
     learn = { id = "personal"; key = "github_primary"; };
+    sandbox = { id = "personal"; key = "github_primary"; };
   };
 
   keyNames = lib.unique (map (entry: entry.key) (lib.attrValues dirs));

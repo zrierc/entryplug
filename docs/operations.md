@@ -276,8 +276,8 @@ stay unwritten; the switch itself still completes.
 
 ## Git
 
-Each directory under `~/Dev` has its own account. The directory decides the
-commit identity and the ssh key, and the remote stays a plain
+Each mapped directory under `~/Dev` has its own account. The directory decides
+the commit identity and the ssh key, and the remote stays a plain
 `git@github.com:owner/repo`:
 
 | Directory        | Identity   | ssh key          |
@@ -287,6 +287,13 @@ commit identity and the ssh key, and the remote stays a plain
 | `~/Dev/personal` | `personal` | `github_primary` |
 | `~/Dev/projects` | `personal` | `github_primary` |
 | `~/Dev/learn`    | `personal` | `github_primary` |
+| `~/Dev/sandbox`  | `personal` | `github_primary` |
+
+There is no global `user.name` or `user.email`. Directories not in the table,
+including `~/Dev/go`, `~/Dev/build-sources` and anything outside `~/Dev`, have
+no identity: a commit there fails instead of using another account. `devRoot`
+comes from `hosts/<host>.nix`; the module falls back to `~/Dev` for the Linux
+home configurations.
 
 `modules/home/git.nix` generates one `includeIf` block per directory: the first
 sets `core.sshCommand` to `ssh -i <key> -o IdentitiesOnly=yes`, the second
@@ -330,14 +337,14 @@ because the repo never held the key.
 ### GitHub CLI
 
 `gh` gets the same directory treatment as git, through a wrapper that
-`modules/home/gh.nix` puts on PATH. Inside `~/Dev` the directory picks a git
-identity, the wrapper reads `user.name` from the identity file that activation
-wrote from the secret manager, and asks gh for that account's token, exported
-as `GH_TOKEN` for the one command. The table above maps each directory to a git
-identity, so every directory runs gh as the same account it commits as, with no
-username stored in the repo. Outside `~/Dev` the wrapper sets nothing and gh
-uses its active account. `gh auth` subcommands always skip the wrapper, so they
-see gh's own config. Because the login is read from `git.<id>.name`, that secret
+`modules/home/gh.nix` puts on PATH. Inside a mapped directory the wrapper reads
+`user.name` from the identity file that activation wrote from the secret
+manager, and asks gh for that account's token, exported as `GH_TOKEN` for the
+one command. The table above maps each directory to a git identity, so every
+mapped directory runs gh as the same account it commits as, with no username
+stored in the repo. Outside the map the wrapper sets nothing and gh uses its
+active account. `gh auth` subcommands always skip the wrapper, so they see gh's
+own config. Because the login is read from `git.<id>.name`, that secret
 value has to be the GitHub username; if it is not, gh warns and falls back to
 the active account.
 

@@ -41,7 +41,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "hm-backup";
-    extraSpecialArgs = { inherit inputs host; };
+    extraSpecialArgs = { inherit inputs host; devRoot = host.devRoot; };
     users.${host.primaryUser} = {
       imports = [
         ../home/base.nix

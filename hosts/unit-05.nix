@@ -4,5 +4,6 @@
   platform = "aarch64-darwin";
   primaryUser = "zrie";
   home = "/Users/zrie";
+  devRoot = "~/Dev";
   profiles = [ "headless" "agents" "workstation" ];
 }
