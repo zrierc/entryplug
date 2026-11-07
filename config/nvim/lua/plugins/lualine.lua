@@ -10,7 +10,7 @@ end
 return {
   "nvim-lualine/lualine.nvim",
   opts = function(_, opts)
-    local colorscheme = vim.g.colors_name or vim.env.NVIM_THEME or "rose-pine-moon"
+    local colorscheme = vim.g.colors_name or vim.env.NVIM_THEME or "oxocarbon"
 
     opts.options = opts.options or {}
     opts.options.theme = colorscheme:find("^rose%-pine") and "rose-pine" or "auto"

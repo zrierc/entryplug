@@ -1,4 +1,5 @@
 local themes = {
+  ["oxocarbon"] = true,
   ["rose-pine-moon"] = true,
   ["sequoia-moonlight-dark"] = true,
   ["sequoia-moonlight-light"] = true,
@@ -10,19 +11,24 @@ local themes = {
 
 local theme = vim.env.NVIM_THEME
 if not theme or not themes[theme] then
-  theme = "rose-pine-moon"
+  -- default theme
+  theme = "oxocarbon"
 end
 
 return {
   -- { "vague2k/vague.nvim" },
+  -- {
+  --   "rose-pine/neovim",
+  --   name = "rose-pine",
+  --   opts = { variant = "moon" },
+  -- },
+  -- {
+  --   "Sequoia-Theme/neovim",
+  --   name = "sequoia",
+  -- },
   {
-    "rose-pine/neovim",
-    name = "rose-pine",
-    opts = { variant = "moon" },
-  },
-  {
-    "Sequoia-Theme/neovim",
-    name = "sequoia",
+    "nyoom-engineering/oxocarbon.nvim",
+    build = false,
   },
   {
     "LazyVim/LazyVim",
