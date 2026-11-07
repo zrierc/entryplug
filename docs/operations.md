@@ -592,6 +592,27 @@ Deliberately not managed: the LazyVim starter's `LICENSE`, `README.md` and
 particular must not be copied into the repo — a nested `.gitignore` would
 silently change git's ignore rules for the whole `config/nvim` subtree.
 
+### TypeScript tooling
+
+Language extras are not committed. The TypeScript LSP is selected by hand:
+enable `lang.typescript` when needed, and leave the biome/oxc/prettier/eslint
+extras off. `config/nvim/lua/plugins/typescript.lua` routes the tools already
+installed in a project instead of adding LSPs for each one.
+
+`conform.nvim` picks exactly one formatter from the nearest marker:
+`.oxfmtrc.*` or `oxfmt.config.ts` selects `oxfmt`, `biome.json*` selects
+`biome`, and everything else falls back to `prettier`. `nvim-lint` picks
+exactly one linter the same way: `.oxlintrc.*` or `oxlint.config.ts` selects
+`oxlint`, `biome.json*` selects `biomejs`, and an ESLint config selects
+`eslint`. No ESLint, Biome or Oxlint LSP runs, so lint diagnostics refresh on
+save and on read rather than while typing. Format-on-save does not apply lint
+fixes.
+
+Project-local `node_modules/.bin` wins. Open nvim at the project root, because
+`nvim-lint` resolves `eslint` from the cwd; a manual open from elsewhere falls
+back to a global binary. A linter whose binary is missing is skipped instead of
+spawning a failing process. Format-on-save is on; lint fixes are not.
+
 ## herdr
 
 `config/herdr.toml` is linked to `~/.config/herdr/config.toml` read-only, which
