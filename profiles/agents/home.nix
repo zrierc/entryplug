@@ -14,6 +14,10 @@
   home.packages = with pkgs; [
     bun
     nodejs_26
+    rustc
+    cargo
+    nixfmt
+    statix
 
     bitwarden-cli
     btop
