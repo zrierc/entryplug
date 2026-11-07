@@ -10,10 +10,12 @@ end
 return {
   "nvim-lualine/lualine.nvim",
   opts = function(_, opts)
+    local colorscheme = vim.g.colors_name or vim.env.NVIM_THEME or "rose-pine-moon"
+
     opts.options = opts.options or {}
-    opts.options.theme = "rose-pine"
+    opts.options.theme = colorscheme:find("^rose%-pine") and "rose-pine" or "auto"
     opts.options.component_separators = { left = "│", right = "│" }
-    opts.options.section_separators = { left = "│", right = "│" }
+    opts.options.section_separators = { left = "", right = "" }
 
     opts.sections.lualine_y = {
       {

@@ -589,6 +589,9 @@ Consequences worth knowing:
 - Optional plugins live in `config/nvim/lua/plugins/`: Cord for Discord
   presence, `nvim-highlight-colors` for color highlighting, and a lualine
   override that shows the LSP name or file format/encoding instead of a clock.
+- The colorscheme is selected with `NVIM_THEME`; the default is
+  `rose-pine-moon`. Sequoia variants are installed for trials. The dashboard
+  header is the `ascii.rest/black-hole` first frame.
 - Adding a plugin means editing `config/nvim/lua/plugins/` in the repo and
   switching. Creating a file from inside `nvim` fails, because `lua/` is
   read-only.
