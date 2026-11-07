@@ -579,7 +579,16 @@ Consequences worth knowing:
 - Plugin pins live outside the repo, so they are per-machine and not shared
   between hosts. Delete `~/.local/share/nvim/lazy-lock.json` to let lazy.nvim
   re-pin from whatever is currently checked out.
-- `:LazyExtras` writes to the relocated `lazyvim.json` and works normally.
+- LazyVim extras are explicit imports in `config/nvim/lua/config/lazy.lua`.
+  `~/.local/share/nvim/lazyvim.json` holds no extras, so `:LazyExtras` shows
+  the imported ones as not managed and refuses to toggle them. Add or remove an
+  extra in the repo and switch; do not add permanent extras from the dashboard.
+- `lang.nix` uses `nil_ls` from Mason. Mason builds `nil` with the `cargo` and
+  `rustc` packages in `agents`; `nixfmt` and `statix` come from the same profile
+  for formatting and linting `.nix` files.
+- Optional plugins live in `config/nvim/lua/plugins/`: Cord for Discord
+  presence, `nvim-highlight-colors` for color highlighting, and a lualine
+  override that shows the LSP name or file format/encoding instead of a clock.
 - Adding a plugin means editing `config/nvim/lua/plugins/` in the repo and
   switching. Creating a file from inside `nvim` fails, because `lua/` is
   read-only.
@@ -594,10 +603,9 @@ silently change git's ignore rules for the whole `config/nvim` subtree.
 
 ### TypeScript tooling
 
-Language extras are not committed. The TypeScript LSP is selected by hand:
-enable `lang.typescript` when needed, and leave the biome/oxc/prettier/eslint
-extras off. `config/nvim/lua/plugins/typescript.lua` routes the tools already
-installed in a project instead of adding LSPs for each one.
+The TypeScript language extra is an explicit import. Leave the biome/oxc/
+prettier/eslint extras off; `config/nvim/lua/plugins/typescript.lua` routes the
+tools already installed in a project instead of adding LSPs for each one.
 
 `conform.nvim` picks exactly one formatter from the nearest marker:
 `.oxfmtrc.*` or `oxfmt.config.ts` selects `oxfmt`, `biome.json*` selects
