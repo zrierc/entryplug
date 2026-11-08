@@ -14,6 +14,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/1a8ff4f57ffe1f732beaa1db842247a381ea471d";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
     # unused: helium comes from the cask now
@@ -48,6 +53,7 @@
 
       hosts = {
         unit-05 = import ./hosts/unit-05.nix;
+        unit-314 = import ./hosts/unit-314.nix;
       };
 
       # linux homeConfigurations are not tied to a host, so the user comes from the only declared host
@@ -58,16 +64,29 @@
         "agents"
         "workstation"
       ];
-      linuxProfiles = [ "headless" ];
+      linuxProfiles = [
+        "headless"
+        "agents"
+      ];
       allSystems = [
         "aarch64-darwin"
         "x86_64-linux"
         "aarch64-linux"
       ];
 
+      darwinHosts = lib.filterAttrs (_: host: lib.hasSuffix "darwin" host.platform) hosts;
+      nixosHosts = lib.filterAttrs (_: host: lib.hasSuffix "linux" host.platform) hosts;
+
       mkDarwin =
         hostName: profile:
         import ./lib/mk-host.nix {
+          inherit inputs profile;
+          host = hosts.${hostName};
+        };
+
+      mkNixos =
+        hostName: profile:
+        import ./lib/mk-nixos.nix {
           inherit inputs profile;
           host = hosts.${hostName};
         };
@@ -126,7 +145,7 @@
           map (
             profile: lib.nameValuePair "${host.hostname}.${profile}" (mkDarwin hostName profile)
           ) host.profiles
-        ) (lib.attrNames hosts)
+        ) (lib.attrNames darwinHosts)
       );
 
       # darwin-rebuild cannot address attribute names containing a dot.
@@ -138,6 +157,11 @@
     in
     {
       inherit darwinConfigurations;
+
+      # one profile per linux host, so the config is addressed by hostname
+      nixosConfigurations = lib.mapAttrs' (
+        name: host: lib.nameValuePair host.hostname (mkNixos name (lib.head host.profiles))
+      ) nixosHosts;
 
       homeConfigurations = lib.listToAttrs (
         lib.concatMap
