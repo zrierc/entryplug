@@ -168,6 +168,17 @@ paths still rooted by a `result` symlink in a clone, and with home-manager
 embedded here (driver version 1) there is no separate home-manager profile — the
 system profile is the one that grows.
 
+### Raspberry Pi
+
+`modules/nixos/core.nix` runs `nix.gc` daily with `--delete-older-than 7d` and
+`nix.optimise` weekly. The device has 32 GB storage, so the default disabled GC
+would fill the card with generations. Keep the count lower by hand when needed:
+
+```sh
+sudo nix-env -p /nix/var/nix/profiles/system --delete-generations +3
+sudo nix store gc
+```
+
 ### Deliberately not used
 
 - `nix.settings.auto-optimise-store` — nix-darwin asserts against it as known to
@@ -445,12 +456,9 @@ esc = capslock
 ```
 
 It is committed but not wired. keyd grabs input devices directly and needs
-root, so it belongs to a system layer: home-manager has no keyd module, and this
-repo's Linux side is standalone home-manager with no `nixosConfigurations`.
-When the `desktop` profile lands, this file goes to `services.keyd` in the
-NixOS configuration.
-
-Until then, per machine: install keyd, copy the file to
+root, so it belongs to a system layer: home-manager has no keyd module. The
+unit-314 NixOS host is the place for it when that config is finished. Until
+then, per machine: install keyd, copy the file to
 `/etc/keyd/default.conf`, start the daemon. Validate the syntax without root or
 a reboot first:
 

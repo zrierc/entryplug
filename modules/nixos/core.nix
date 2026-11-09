@@ -16,6 +16,18 @@
     "flakes"
   ];
 
+  # 32 GB storage on unit-314: keep a week of rollback, then reclaim.
+  nix.gc = {
+    automatic = true;
+    dates = "daily";
+    options = "--delete-older-than 7d";
+  };
+
+  nix.optimise = {
+    automatic = true;
+    dates = "weekly";
+  };
+
   # explicit even though nixos-hardware's raspberry-pi-4 module mkDefaults the same values
   boot.loader = {
     grub.enable = false;

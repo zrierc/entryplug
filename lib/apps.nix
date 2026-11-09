@@ -78,7 +78,7 @@ pkgs.writeShellApplication {
     ${darwinBranch}
 
     if [ -e /etc/NIXOS ]; then
-      attr="$host.$profile"
+      attr="$host"
       has_attr nixosConfigurations "$attr" \
         || fail "no nixosConfiguration '$attr' for host '$host'. Available: $names"
       if [ -n "$dryRun" ]; then
