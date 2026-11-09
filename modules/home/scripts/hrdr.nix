@@ -1,8 +1,8 @@
 # herdr's companion scripts. herdr and nvim only exist in the agents profile
-{ pkgs, inputs, ... }:
+{ pkgs, ... }:
 
 let
-  herdr = inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  herdr = pkgs.herdr;
 in
 
 {

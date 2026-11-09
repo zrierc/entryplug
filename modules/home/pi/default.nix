@@ -1,12 +1,11 @@
 {
   pkgs,
   lib,
-  inputs,
   ...
 }:
 
 let
-  pi = inputs.pi.packages.${pkgs.stdenv.hostPlatform.system}.pi;
+  pi = pkgs.pi-coding-agent;
 
   settings = {
     packages = [

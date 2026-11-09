@@ -49,8 +49,8 @@ Prerequisites:
    echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
    ```
 
-2. Roughly 15–20 GB free disk: pi and herdr compile from source on the first
-   switch (20–40 minutes).
+2. Roughly 15–20 GB free disk. The first switch downloads a large system
+   closure; pi and herdr are substituted from the nixpkgs cache.
 
 Run this in a graphical terminal, not over SSH: macOS asks for App Management
 permission during the first activation, and a TCC prompt can abort an SSH

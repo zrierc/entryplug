@@ -1,10 +1,10 @@
-# herdr is a pinned flake input, pinned because the config keys below are
-# version-specific: v0.9.3 is what this repo declares.
-{ pkgs, inputs, ... }:
+# herdr comes from nixpkgs unstable. Its config keys are version-specific, so
+# run `herdr config check` after a nixpkgs update.
+{ pkgs, ... }:
 
 {
   home.packages = [
-    inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
+    pkgs.herdr
   ];
 
   # The store copy is read-only, so `herdr config reset-keys` cannot rewrite it

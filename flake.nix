@@ -28,12 +28,14 @@
       inputs.nixpkgs-darwin.follows = "nixpkgs";
     };
 
+    # unused: pi comes from nixpkgs now; kept for rollback
     pi = {
       url = "github:earendil-works/pi/stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nixpkgs-darwin-x64.follows = "nixpkgs";
     };
 
+    # unused: herdr comes from nixpkgs now; kept for rollback
     herdr = {
       url = "github:herdrdev/herdr/v0.9.5";
       inputs.nixpkgs.follows = "nixpkgs";

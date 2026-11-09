@@ -203,8 +203,8 @@ Preference order, top wins:
    dedicated module; GUI apps go in `profiles/workstation/system.nix`
    (`environment.systemPackages` — nix-darwin copies their app bundles into
    `/Applications/Nix Apps`).
-2. **A pinned flake** → its own module, e.g. `modules/home/herdr.nix`
-   (`inputs.<flake>.packages.<system>.default`).
+2. **A pinned flake** → its own module with `inputs.<flake>` when nixpkgs
+   cannot provide the version or platform support needed.
 3. **No usable nixpkgs/darwin package** → a Homebrew cask in
    `modules/darwin/homebrew.nix`. See the Homebrew policy above.
 
@@ -672,11 +672,12 @@ sockets and `session-snapshots/`. `default.toml` is the annotated reference
 config, embedded in the herdr binary and written back on demand — it is not user
 config and is not tracked here.
 
-herdr is a pinned flake input rather than a nixpkgs package because its config
-keys are version-specific; this repo declares `v0.9.3`. `herdr update` downloads
-and installs its own build outside the nix store, which would leave two herdr
-binaries on the machine with the store one still winning on PATH. To change
-version, bump `inputs.herdr` in `flake.nix`.
+herdr comes from nixpkgs unstable, so its version follows nixpkgs. Its config
+keys are version-specific: after a nixpkgs update, run `herdr config check` and
+compare `config/herdr.toml` before relying on the new build. Do not run
+`herdr update`; it installs its own build outside the nix store and leaves two
+herdr binaries on the machine with the store one still winning on PATH. If a
+nixpkgs bump breaks the config, pin nixpkgs or reintroduce an `inputs.herdr`.
 
 ## Prompt (starship)
 
@@ -762,8 +763,8 @@ nix run .#agents              # then switch
 | --- | --- |
 | shell, zsh plugins, CLI tools (eza, bat, fd, fzf, zoxide, neovim, tmux, rsync, …) | `nix flake update nixpkgs` — the zsh plugins come from nixpkgs, not from a vendored clone |
 | home-manager and nix-darwin themselves | the same `nix flake update`; both are flake inputs, so there is no channel to follow |
-| pi | `nix flake update pi` for the binary; its npm extensions refresh at every activation through `pi update --extensions` |
-| herdr | `nix flake update herdr`. Its config keys are version-specific, so re-read `config/herdr.toml` after a bump |
+| pi | `nix flake update nixpkgs` for the binary; its npm extensions refresh at every activation through `pi update --extensions` |
+| herdr | `nix flake update nixpkgs`. Its config keys are version-specific, so run `herdr config check` after a bump |
 | Lilex font | edit `version` and the `hash` in `packages/lilex-nerd-font.nix` |
 | Homebrew | `nix flake update nix-homebrew` refreshes Homebrew itself. `onActivation.upgrade` is false, so a switch never chases cask versions: casks marked `auto_updates` update themselves, and `brew upgrade` (allowed by the shim) is how rustdesk and anydesk move |
 | neovim plugins | **not** through nix: lazy.nvim pins them per machine, with the lockfile in `stdpath("data")`. Use `:Lazy update` inside nvim |
