@@ -37,6 +37,7 @@
       "vorssaint"
       "rustdesk"
       "anydesk"
+      "firefox"
       "tailscale-app"
       "helium-browser"
       "vesktop"

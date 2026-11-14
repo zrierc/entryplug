@@ -11,7 +11,6 @@
     with pkgs;
     [
       postman
-      firefox-bin
       ghostty-bin
       mpv
       ffmpeg
