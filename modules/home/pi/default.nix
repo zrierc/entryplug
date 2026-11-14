@@ -16,13 +16,14 @@ let
       "npm:@aliou/pi-guardrails"
       "npm:@dietrichgebert/ponytail"
       "npm:pi-web-access"
+      "npm:@henryqw/pi-undo"
     ];
     markdown.mermaid = "streaming";
     tuiMode = "fullscreen";
     theme = "dark";
     hideThinkingBlock = false;
-    defaultProvider = "commandcode";
-    defaultModel = "deepseek/deepseek-v4.1-flash";
+    defaultProvider = "opencode-go";
+    defaultModel = "deepseek-v4.1-flash";
     defaultThinkingLevel = "max";
   };
 

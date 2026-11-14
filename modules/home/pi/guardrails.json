@@ -23,7 +23,7 @@
       },
       {
         "kind": "directory",
-        "path": "~/.pi/agent/"
+        "path": "~/.pi"
       },
       {
         "kind": "directory",
